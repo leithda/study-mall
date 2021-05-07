@@ -13,6 +13,7 @@
         <module>study-mall-service</module>
         <module>study-mall-third</module>
         <module>study-mall-gateway</module>
+        <module>renren-fast</module>
     </modules>
     <packaging>pom</packaging>
     <description>商城聚合项目</description>
