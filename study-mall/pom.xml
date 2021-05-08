@@ -26,6 +26,10 @@
         <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
         <spring-cloud-alibaba.version>2.2.2.RELEASE</spring-cloud-alibaba.version>
         <spring-cloud.version>Hoxton.SR9</spring-cloud.version>
+
+        <!-- 自定义依赖管理 -->
+        <mybatis-plus.version>3.4.0</mybatis-plus.version>
+        <druid-version>1.2.5</druid-version>
     </properties>
 
     <!-- 项目公共依赖 -->
@@ -44,6 +48,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!-- Spring Boot 版本控制 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -61,6 +66,21 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- Mybatis Plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- Druid 数据源监控 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid-version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>
