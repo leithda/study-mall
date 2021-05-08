@@ -1,0 +1,19 @@
+# Spring 配置
+spring:
+  profiles:
+    active: dev
+  application:
+    name: order-service
+
+# 端口
+server:
+  port: 9030
+
+# Mybatis-Plus 配置
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0
