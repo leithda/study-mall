@@ -3,22 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>study-mall</artifactId>
+        <artifactId>study-mall-service</artifactId>
         <groupId>cn.leithda</groupId>
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <description>
+        会员服务
+    </description>
 
-    <artifactId>study-mall-service-api</artifactId>
-    <packaging>pom</packaging>
-    <description>服务接口</description>
-    <modules>
-        <module>product-service-api</module>
-        <module>order-service-api</module>
-        <module>ware-service-api</module>
-        <module>member-service-api</module>
-        <module>coupon-service-api</module>
-    </modules>
+    <artifactId>member-service</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -26,12 +20,11 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>cn.leithda</groupId>
-            <artifactId>study-mall-common-core</artifactId>
+            <artifactId>member-service-api</artifactId>
             <version>1.0</version>
         </dependency>
-    </dependencies>
 
+    </dependencies>
 </project>
