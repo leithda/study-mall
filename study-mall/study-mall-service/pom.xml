@@ -10,7 +10,46 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>study-mall-service</artifactId>
-    <description>服务实现</description>
+    <packaging>pom</packaging>
+    <description>
+        服务实现
+    </description>
+
+    <modules>
+        <module>product-service</module>
+        <module>coupon-service</module>
+        <module>order-service</module>
+        <module>member-service</module>
+        <module>ware-service</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.leithda</groupId>
+            <artifactId>study-mall-common-core</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.leithda</groupId>
+            <artifactId>study-mall-common-db</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.leithda</groupId>
+            <artifactId>study-mall-common-nacos</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+    </dependencies>
+
+
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
