@@ -1,7 +1,7 @@
 <template> 
   <div>
     <el-upload
-      action="http://gulimall-hello.oss-cn-beijing.aliyuncs.com"
+      action="http://localhost:19000/minio/uploadFile"
       :data="dataObj"
       list-type="picture"
       :multiple="false" :show-file-list="showFileList"
@@ -19,9 +19,6 @@
   </div>
 </template>
 <script>
-   import {policy} from './policy'
-   import { getUUID } from '@/utils'
-
   export default {
     name: 'singleUpload',
     props: {
@@ -55,13 +52,7 @@
     data() {
       return {
         dataObj: {
-          policy: '',
-          signature: '',
-          key: '',
-          ossaccessKeyId: '',
-          dir: '',
-          host: '',
-          // callback:'',
+          bucketName: ''
         },
         dialogVisible: false
       };
@@ -78,27 +69,13 @@
       },
       beforeUpload(file) {
         let _self = this;
-        return new Promise((resolve, reject) => {
-          policy().then(response => {
-            console.log("响应的数据",response);
-            _self.dataObj.policy = response.data.policy;
-            _self.dataObj.signature = response.data.signature;
-            _self.dataObj.ossaccessKeyId = response.data.accessid;
-            _self.dataObj.key = response.data.dir +getUUID()+'_${filename}';
-            _self.dataObj.dir = response.data.dir;
-            _self.dataObj.host = response.data.host;
-            console.log("响应的数据222。。。",_self.dataObj);
-            resolve(true)
-          }).catch(err => {
-            reject(false)
-          })
-        })
       },
       handleUploadSuccess(res, file) {
         console.log("上传成功...")
+        console.log(res)
         this.showFileList = true;
         this.fileList.pop();
-        this.fileList.push({name: file.name, url: this.dataObj.host + '/' + this.dataObj.key.replace("${filename}",file.name) });
+        this.fileList.push({name: file.name, url: res.data });
         this.emitInput(this.fileList[0].url);
       }
     }
