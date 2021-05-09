@@ -1,0 +1,4 @@
+
+logging:
+  level:
+    cn.study.file: debug
