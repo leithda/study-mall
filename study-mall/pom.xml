@@ -31,6 +31,7 @@
         <!-- 自定义依赖管理 -->
         <mybatis-plus.version>3.4.0</mybatis-plus.version>
         <druid-version>1.2.5</druid-version>
+        <minio.version>7.0.2</minio.version>
     </properties>
 
     <!-- 项目公共依赖 -->
@@ -80,6 +81,12 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid</artifactId>
                 <version>${druid-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
             </dependency>
 
         </dependencies>
