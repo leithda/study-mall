@@ -1,6 +1,7 @@
 package cn.study.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,15 @@ import cn.study.common.utils.R;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    /**
+     * 获取分类树
+     */
+    @RequestMapping("/tree")
+    public R tree(@RequestParam Map<String, Object> params){
+        List<CategoryEntity> tree = categoryService.tree(params);
+        return R.ok().put("data", tree);
+    }
 
     /**
      * 列表
