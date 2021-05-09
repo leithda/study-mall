@@ -23,5 +23,11 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @param params 参数
      */
     List<CategoryEntity> tree(Map<String, Object> params);
+
+    /**
+     * 批量删除分类
+     * @param idList 分类ID集合
+     */
+    void removeCategoryByIds(List<Long> idList);
 }
 

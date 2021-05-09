@@ -48,6 +48,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     /**
+     * 批量删除分类
+     * @param idList 分类ID集合
+     */
+    @Override
+    public void removeCategoryByIds(List<Long> idList) {
+        // TODO: 检查分类是否被使用
+
+        baseMapper.deleteBatchIds(idList);
+    }
+
+    /**
      * 设置分类的子节点
      *
      * @param parentCategory 父级分类
