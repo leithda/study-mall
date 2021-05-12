@@ -50,8 +50,8 @@ export default {
     },
     getMenus() {
       this.$http({
-        url: this.$http.adornUrl("/product/category/list/tree"),
-        method: "get"
+        url: this.$http.adornUrl("/product/category/tree"),
+        method: "get" 
       }).then(({ data }) => {
         this.menus = data.data;
       });
