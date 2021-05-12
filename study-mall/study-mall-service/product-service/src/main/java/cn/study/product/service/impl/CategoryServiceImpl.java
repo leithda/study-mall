@@ -1,5 +1,7 @@
 package cn.study.product.service.impl;
 
+import cn.study.product.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -14,16 +16,20 @@ import cn.study.common.utils.Query;
 import cn.study.product.dao.CategoryDao;
 import cn.study.product.entity.CategoryEntity;
 import cn.study.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
+    @Autowired
+    CategoryBrandRelationService categoryBrandRelationService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CategoryEntity> page = this.page(
                 new Query<CategoryEntity>().getPage(params),
-                new QueryWrapper<CategoryEntity>()
+                new QueryWrapper<>()
         );
 
         return new PageUtils(page);
@@ -31,6 +37,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 获取分类树
+     *
      * @param params 参数
      */
     @Override
@@ -47,6 +54,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 批量删除分类
+     *
      * @param idList 分类ID集合
      */
     @Override
@@ -64,19 +72,33 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         Collections.reverse(parentPath);
 
 
-        return parentPath.toArray(new Long[parentPath.size()]);
+        return parentPath.toArray(new Long[0]);
     }
 
-    private List<Long> findParentPath(Long catelogId,List<Long> paths){
+    /**
+     * 级联更新所有的关联数据
+     *
+     * @param category 分类
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCascade(CategoryEntity category) {
+        updateById(category);
+
+        categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
+    }
+
+    private List<Long> findParentPath(Long catelogId, List<Long> paths) {
         //1、收集当前节点id
         paths.add(catelogId);
         CategoryEntity byId = this.getById(catelogId);
-        if(byId.getParentCid()!=0){
-            findParentPath(byId.getParentCid(),paths);
+        if (byId.getParentCid() != 0) {
+            findParentPath(byId.getParentCid(), paths);
         }
         return paths;
 
     }
+
     /**
      * 设置分类的子节点
      *
