@@ -3,7 +3,6 @@ package cn.study.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
-import cn.study.product.entity.vo.AttrRespVo;
 import cn.study.product.entity.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -55,8 +54,8 @@ public class AttrController {
     @RequestMapping("/info/{attrId}")
     public R info(@PathVariable("attrId") Long attrId){
 		AttrEntity attr = attrService.getById(attrId);
-        AttrRespVo attrRespVo = attrService.getAttrInfo(attrId);
-        return R.ok().put("attr", attrRespVo);
+
+        return R.ok().put("attr", attr);
     }
 
     /**
@@ -73,8 +72,8 @@ public class AttrController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody AttrVo attr){
-		attrService.updateAttr(attr);
+    public R update(@RequestBody AttrEntity attr){
+		attrService.updateById(attr);
 
         return R.ok();
     }

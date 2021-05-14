@@ -8,8 +8,6 @@ import cn.study.product.entity.AttrGroupEntity;
 import cn.study.product.entity.CategoryEntity;
 import cn.study.product.entity.vo.AttrRespVo;
 import cn.study.product.entity.vo.AttrVo;
-import cn.study.product.service.CategoryService;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +42,11 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Autowired
     CategoryDao categoryDao;
 
-    @Autowired
-    CategoryService categoryService;
-
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrEntity> page = this.page(
                 new Query<AttrEntity>().getPage(params),
-                new QueryWrapper<>()
+                new QueryWrapper<AttrEntity>()
         );
 
         return new PageUtils(page);
@@ -61,7 +56,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Transactional(rollbackFor = Exception.class)
     public void saveAttr(AttrVo attrVo) {
         AttrEntity attrEntity = new AttrEntity();
-        BeanUtils.copyProperties(attrVo, attrEntity);
+        BeanUtils.copyProperties(attrVo,attrEntity);
         // 1. 保存基本数据
         save(attrEntity);
 
@@ -77,14 +72,16 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Override
     public PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId) {
         QueryWrapper<AttrEntity> wrapper = new QueryWrapper<>();
-        if (catelogId != 0) {
-            wrapper.eq("catelog_id", catelogId);
+        if (catelogId != 0){
+            wrapper.eq("catelog_id",catelogId);
         }
 
         String key = (String) params.get("key");
 
-        if (StringUtils.isNotBlank(key)) {
-            wrapper.and(w -> w.eq("attr_id", key).or().like("attr_name", key));
+        if(StringUtils.isNotBlank(key)){
+            wrapper.and(w->{
+                w.eq("attr_id",key).or().like("attr_name",key);
+            });
         }
 
         IPage<AttrEntity> page = this.page(
@@ -113,57 +110,6 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
         pageUtils.setList(attrRespVos);
         return pageUtils;
-    }
-
-    @Override
-    public AttrRespVo getAttrInfo(Long attrId) {
-        AttrRespVo attrRespVo = new AttrRespVo();
-
-        AttrEntity attrEntity = this.getById(attrId);
-        BeanUtils.copyProperties(attrEntity, attrRespVo);
-
-        // 1、设置分组信息
-        AttrAttrgroupRelationEntity attrAttrgroupRelation = relationDao.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrId));
-        if (Objects.nonNull(attrAttrgroupRelation)) {
-            attrRespVo.setAttrGroupId(attrAttrgroupRelation.getAttrGroupId());
-            AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrAttrgroupRelation.getAttrGroupId());
-            if(Objects.nonNull(attrGroupEntity)) {
-                attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());
-            }
-        }
-        // 2、设置分类信息
-        Long catelogId = attrEntity.getCatelogId();
-        CategoryEntity categoryEntity = categoryDao.selectById(catelogId);
-
-        Long[] catelogPath = categoryService.findCatelogPath(catelogId);
-        attrRespVo.setCatelogPath(catelogPath);
-        if(Objects.nonNull(categoryEntity)) {
-            attrRespVo.setCatelogName(categoryEntity.getName());
-        }
-
-        return attrRespVo;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateAttr(AttrVo attr) {
-        AttrEntity attrEntity = new AttrEntity();
-        BeanUtils.copyProperties(attr,attrEntity);
-
-        this.updateById(attrEntity);
-
-        // 1、修改分组关联
-        AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
-        relationEntity.setAttrGroupId(attr.getAttrGroupId());
-        relationEntity.setAttrId(attr.getAttrId());
-
-
-        Integer count = relationDao.selectCount(new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attr.getAttrId()));
-        if(count > 0){
-            relationDao.update(relationEntity,new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id",attr.getAttrId()));
-        }else{
-            relationDao.insert(relationEntity);
-        }
     }
 
 }
