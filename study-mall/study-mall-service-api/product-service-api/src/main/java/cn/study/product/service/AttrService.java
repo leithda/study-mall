@@ -1,5 +1,7 @@
 package cn.study.product.service;
 
+
+import cn.study.product.entity.vo.AttrRespVo;
 import cn.study.product.entity.vo.AttrVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.study.common.utils.PageUtils;
@@ -21,5 +23,10 @@ public interface AttrService extends IService<AttrEntity> {
     void saveAttr(AttrVo attrVo);
 
     PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId);
+
+
+    AttrRespVo getAttrInfo(Long attrId);
+
+    void updateAttr(AttrVo attr);
 }
 
