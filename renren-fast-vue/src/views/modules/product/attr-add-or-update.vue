@@ -13,7 +13,7 @@
       <el-form-item label="属性类型" prop="attrType">
         <el-select v-model="dataForm.attrType" placeholder="请选择">
           <el-option label="规格参数" :value="1"></el-option>
-          <el-option label="销售属性" :value="0"></el-option>
+          <el-option label="销售属性" :value="2"></el-option>
         </el-select>
       </el-form-item>
 
@@ -24,8 +24,8 @@
           inactive-text="只能单个值"
           active-color="#13ce66"
           inactive-color="#ff4949"
-          :inactive-value="0"
-          :active-value="1"
+          :inactive-value=0
+          :active-value=1
         ></el-switch>
       </el-form-item>
       <el-form-item label="可选值" prop="valueSelect">
@@ -213,6 +213,7 @@ export default {
             method: "get",
             params: this.$http.adornParams()
           }).then(({ data }) => {
+            console.log(data);
             if (data && data.code === 0) {
               this.dataForm.attrName = data.attr.attrName;
               this.dataForm.searchType = data.attr.searchType;
