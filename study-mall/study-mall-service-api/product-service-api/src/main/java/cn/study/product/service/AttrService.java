@@ -1,12 +1,14 @@
 package cn.study.product.service;
 
 
+import cn.study.product.entity.vo.AttrGroupRelationVo;
 import cn.study.product.entity.vo.AttrRespVo;
 import cn.study.product.entity.vo.AttrVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.study.common.utils.PageUtils;
 import cn.study.product.entity.AttrEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,5 +30,24 @@ public interface AttrService extends IService<AttrEntity> {
     AttrRespVo getAttrInfo(Long attrId);
 
     void updateAttr(AttrVo attr);
+
+    /**
+     * 根据分组id，获取组内关联的所有属性
+     * @param attrGroupId 属性分组ID
+     */
+    List<AttrEntity> getRelationAttr(Long attrGroupId);
+
+    /**
+     * 移除属性分组与属性的关联
+     * @param attrGroupRelationVoList 参数
+     */
+    void deleteRelation(List<AttrGroupRelationVo> attrGroupRelationVoList);
+
+    /**
+     * 获取当前分组未关联的属性
+     * @param params 分页参数
+     * @param attrGroupId 分组ID
+     */
+    PageUtils getAttrNoRelation(Map<String, Object> params, Long attrGroupId);
 }
 
