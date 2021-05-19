@@ -1,6 +1,5 @@
 package cn.study.common.constant;
 
-import lombok.Data;
 
 public class ProductConstant {
 
