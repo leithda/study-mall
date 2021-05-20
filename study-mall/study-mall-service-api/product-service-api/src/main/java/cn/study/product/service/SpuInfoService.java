@@ -36,5 +36,11 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
      * @param infoDescEntity spu 图片信息
      */
     void saveSpuInfoDesc(SpuInfoDescEntity infoDescEntity);
+
+    /**
+     * 根据条件分页查询 Spu 列表
+     * @param params 参数
+     */
+    PageUtils queryPageByCondition(Map<String, Object> params);
 }
 

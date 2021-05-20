@@ -8,6 +8,8 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.56.10:8848
+  jackson:
+    date-format: yyyy-MM-dd HH-mm-ss
 
 # 端口
 server:

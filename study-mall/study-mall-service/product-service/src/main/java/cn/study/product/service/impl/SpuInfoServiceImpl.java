@@ -8,7 +8,7 @@ import cn.study.product.entity.vo.*;
 import cn.study.product.feign.CouponFeignService;
 import cn.study.product.service.*;
 import com.alibaba.nacos.common.utils.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import cn.study.common.utils.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -189,6 +189,38 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Override
     public void saveSpuInfoDesc(SpuInfoDescEntity infoDescEntity) {
         spuInfoDescService.save(infoDescEntity);
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+
+
+        String key = (String) params.get("key");
+        if (StringUtils.isNotBlank(key)) {
+            wrapper.and(w -> {
+                w.eq("id", key).or().like("spu_name", key);
+            });
+        }
+
+        String status = (String) params.get("status");
+        if (StringUtils.isNotBlank(status)) {
+            wrapper.eq("publish_status", status);
+        }
+
+        String brandId = (String) params.get("brandId");
+        if (StringUtils.isNotBlank(brandId)) {
+            wrapper.eq("brand_id", brandId);
+        }
+
+        String catelogId = (String) params.get("catelogId");
+        if (StringUtils.isNotBlank(catelogId)) {
+            wrapper.eq("catelog_id", catelogId);
+        }
+
+        IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params), wrapper);
+
+        return new PageUtils(page);
     }
 
 }
