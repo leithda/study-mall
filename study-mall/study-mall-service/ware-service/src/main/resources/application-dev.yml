@@ -8,4 +8,4 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 logging:
   level:
-    cn.study.product: debug
+    cn.study.ware: debug
