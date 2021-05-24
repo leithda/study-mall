@@ -1,5 +1,6 @@
 package cn.study.ware.service;
 
+import cn.study.ware.entity.vo.PurchaseDoneVo;
 import cn.study.ware.entity.vo.WareMergeVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.study.common.utils.PageUtils;
@@ -36,5 +37,11 @@ public interface PurchaseService extends IService<PurchaseEntity> {
      * @param ids 采购单列表
      */
     void received(List<Long> ids);
+
+    /**
+     * 采购单采购完成
+     * @param doneVo 参数
+     */
+    void done(PurchaseDoneVo doneVo);
 }
 
