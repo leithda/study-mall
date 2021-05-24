@@ -66,7 +66,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
         IPage<PurchaseEntity> page = this.page(
                 new Query<PurchaseEntity>().getPage(params),
-                new QueryWrapper<PurchaseEntity>().eq("status", 0).or().eq("status",1)
+                new QueryWrapper<PurchaseEntity>().eq("status", 0).or().eq("status", 1)
         );
 
         return new PageUtils(page);
@@ -78,7 +78,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
     public void mergePurchase(WareMergeVo mergeVo) {
 
         Long purchaseId = mergeVo.getPurchaseId();
-        if(Objects.isNull(purchaseId)){
+        if (Objects.isNull(purchaseId)) {
             // 1、新建一个
             PurchaseEntity purchaseEntity = new PurchaseEntity();
             purchaseEntity.setCreateTime(new Date());
@@ -88,6 +88,12 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
             this.save(purchaseEntity);
 
             purchaseId = purchaseEntity.getId();
+        }
+
+        PurchaseEntity purchaseEntity = getById(purchaseId);
+        if(!purchaseEntity.getStatus().equals(WareConstant.PurchaseStatusEnum.CREATED.getCode())
+                && !purchaseEntity.getStatus().equals(WareConstant.PurchaseStatusEnum.ASSIGNED.getCode())){
+            throw new RuntimeException("采购单状态异常，请确认");
         }
 
         List<Long> items = mergeVo.getItems();
@@ -103,10 +109,36 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
         purchaseDetailService.updateBatchById(purchaseDetailEntityList);
 
-        PurchaseEntity purchaseEntity = new PurchaseEntity();
-        purchaseEntity.setId(purchaseId);
         purchaseEntity.setUpdateTime(new Date());
         updateById(purchaseEntity);
+    }
+
+    @Override
+    public void received(List<Long> ids) {
+        // 1、确认当前采购单状态
+        List<PurchaseEntity> purchaseEntityList = ids.stream().map(this::getById).filter(purchaseEntity -> purchaseEntity.getStatus() == WareConstant.PurchaseStatusEnum.CREATED.getCode()
+                || purchaseEntity.getStatus().equals(WareConstant.PurchaseStatusEnum.ASSIGNED.getCode())
+        )
+                .peek(entity -> {
+                    entity.setStatus(WareConstant.PurchaseStatusEnum.RECEIVE.getCode());
+                    entity.setUpdateTime(new Date());
+                })
+                .collect(Collectors.toList());
+
+        // 2、改变采购单状态
+        updateBatchById(purchaseEntityList);
+
+        // 3、更改采购需求状态
+        purchaseEntityList.forEach(item -> {
+            List<PurchaseDetailEntity> purchaseDetailEntityList = purchaseDetailService.listDetailByPurchaseId(item.getId());
+            List<PurchaseDetailEntity> updPurchaseDetailEntityList = purchaseDetailEntityList.stream().map(detailEntity -> {
+                PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();
+                purchaseDetailEntity.setId(detailEntity.getId());
+                purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.BUYING.getCode());
+                return purchaseDetailEntity;
+            }).collect(Collectors.toList());
+            purchaseDetailService.updateBatchById(updPurchaseDetailEntityList);
+        });
     }
 
 }

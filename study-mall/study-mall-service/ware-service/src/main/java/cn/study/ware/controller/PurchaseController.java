@@ -1,6 +1,7 @@
 package cn.study.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import cn.study.ware.entity.vo.WareMergeVo;
@@ -28,6 +29,20 @@ public class PurchaseController {
     private PurchaseService purchaseService;
 
 
+    /**
+     * 领取采购单
+     * @param ids 采购单id集合
+     */
+    @PostMapping("received")
+    public R received(@RequestBody List<Long> ids){
+        purchaseService.received(ids);
+        return R.ok();
+    }
+
+    /**
+     * 合并采购需求到采购单
+     * @param mergeVo 参数
+     */
     @PostMapping("merge")
     public R merge(@RequestBody WareMergeVo mergeVo){
         purchaseService.mergePurchase(mergeVo);
@@ -35,6 +50,10 @@ public class PurchaseController {
     }
 
 
+    /**
+     * 获取未领取采购单列表
+     * @param params 参数
+     */
     @RequestMapping("/unreceive/list")
     public R unReceiveList(@RequestParam Map<String, Object> params){
         PageUtils page = purchaseService.queryPageUnReceive(params);
