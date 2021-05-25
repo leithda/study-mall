@@ -49,3 +49,18 @@ docker run --name elasticsearch -p 9200:9200 -p 9300:9300 \
 docker update elasticsearch --restart=always
 ```
 
+
+
+## 安装Kibana
+
+
+
+```bash
+# 获取镜像
+docker pull kibana:7.4.2 --registry-mirror=https://docker.mirrors.ustc.edu.cn
+
+# 运行
+docker run --name kibana -e ELASTICSEARCH_HOSTS=http://192.168.56.10:9200 -p 5601:5601 -d kibana:7.4.2
+```
+
+- 由于直接获取镜像速度太慢，使用`--registry-mirror`参数指定国内镜像源
