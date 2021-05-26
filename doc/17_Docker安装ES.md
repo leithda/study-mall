@@ -64,3 +64,23 @@ docker run --name kibana -e ELASTICSEARCH_HOSTS=http://192.168.56.10:9200 -p 560
 ```
 
 - 由于直接获取镜像速度太慢，使用`--registry-mirror`参数指定国内镜像源
+
+
+
+## 修改kibana为中文
+
+```bash
+
+
+# 进入容器
+docker exec -it kibana /bin/bash
+
+# 确认汉化文件 x-pack\plugins\translations\translations下是否有zh-CN.json
+
+vi config/kibana.yml
+
+
+# 加入 i18n.locale: "zh-CN"
+
+```
+
