@@ -13,12 +13,22 @@
     <packaging>pom</packaging>
     <description>整合第三方服务</description>
     <modules>
-        <module>study-mall-third-file</module>
+        <module>study-mall-file</module>
+        <module>study-mall-search</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>cn.leithda</groupId>
+            <artifactId>study-mall-common-nacos</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

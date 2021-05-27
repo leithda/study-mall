@@ -3,7 +3,7 @@ spring:
   profiles:
     active: dev
   application:
-    name: minio-service
+    name: file-service
   cloud:
     nacos:
       discovery:

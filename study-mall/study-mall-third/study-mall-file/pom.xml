@@ -3,16 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>study-mall-third-file</artifactId>
+        <artifactId>study-mall-third</artifactId>
         <groupId>cn.leithda</groupId>
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>
-        minio文件服务
+        文件服务(Minio、FastDFS...)
     </description>
 
-    <artifactId>file-minio-service</artifactId>
+    <artifactId>study-mall-file</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -39,8 +39,5 @@
             <artifactId>study-mall-common-core</artifactId>
             <version>1.0</version>
         </dependency>
-
-
     </dependencies>
-
 </project>

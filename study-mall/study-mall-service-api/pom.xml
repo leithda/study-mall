@@ -18,7 +18,6 @@
         <module>ware-service-api</module>
         <module>member-service-api</module>
         <module>coupon-service-api</module>
-        <module>common-service-api</module>
     </modules>
 
     <properties>

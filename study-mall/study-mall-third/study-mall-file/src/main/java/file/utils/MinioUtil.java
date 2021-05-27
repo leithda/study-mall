@@ -1,4 +1,4 @@
-package cn.study.file.utils;
+package file.utils;
 
 import cn.study.common.utils.StringUtils;
 import io.minio.MinioClient;

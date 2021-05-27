@@ -1,4 +1,4 @@
-package cn.study.file.service;
+package file.service;
 
 
 import org.springframework.web.multipart.MultipartFile;

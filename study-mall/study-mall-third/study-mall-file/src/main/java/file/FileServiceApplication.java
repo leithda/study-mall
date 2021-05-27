@@ -1,4 +1,4 @@
-package cn.study.file;
+package file;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,8 +9,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-public class MinioServiceApplication {
+public class FileServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MinioServiceApplication.class, args);
+        SpringApplication.run(FileServiceApplication.class, args);
     }
 }

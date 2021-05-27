@@ -1,7 +1,7 @@
-package cn.study.file.service.impl;
+package file.service.impl;
 
-import cn.study.file.service.MinioService;
-import cn.study.file.utils.MinioUtil;
+import file.service.MinioService;
+import file.utils.MinioUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,10 +1,10 @@
-package cn.study.file.controller;
+package file.controller;
 
 
 import cn.study.common.utils.R;
 import cn.study.common.utils.StringUtils;
-import cn.study.file.conf.MinioConfig;
-import cn.study.file.service.MinioService;
+import file.conf.MinioConfig;
+import file.service.MinioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
