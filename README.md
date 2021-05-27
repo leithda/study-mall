@@ -43,3 +43,9 @@
  [17_Docker安装ES](./doc/17_Docker安装ES.md) 
 
  [18_ElasticSearch常见操作](./doc/18_ElasticSearch常见操作.md) 
+
+ [19_ES安装IK分词器](./doc/19_ES安装IK分词器.md) 
+
+ [20_Docker安装Nginx](./doc/20_Docker安装Nginx.md) 
+
+ [21_SpringBoot整合ES](./doc/21_SpringBoot整合ES.md) 
