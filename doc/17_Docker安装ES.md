@@ -1,9 +1,15 @@
 
 
+
+
+> 注： 由于SpringBoot版本2.3.7.RELEASE 默认的ES版本是7.6.2，故将视频中的ES7.4.2更换为7.6.2
+>
+> 同理，将视频中使用`elasticsearch-rest-high-level-client`提供的操作更改为`spring-boot-data-es`的操作。
+
 ## 下载镜像文件
 
 ```bash
-docker pull elasticsearch:7.4.2
+docker pull elasticsearch:7.6.2
 ```
 
 - [Docker Hub](https://hub.docker.com/_/elasticsearch/)
@@ -34,11 +40,11 @@ sudo chmod -R 777 ~/data/es
 ```bash
 docker run --name elasticsearch -p 9200:9200 -p 9300:9300 \
 -e "discovery.type=single-node" \
--e ES_JAVA_OPTS="-Xms128m -Xmx256m" \
+-e ES_JAVA_OPTS="-Xms128m -Xmx512m" \
 -v ~/data/es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
 -v ~/data/es/data:/usr/share/elasticsearch/data \
 -v ~/data/es/plugins:/usr/share/elasticsearch/plugins \
--d elasticsearch:7.4.2
+-d elasticsearch:7.6.2
 ```
 
 
@@ -57,10 +63,10 @@ docker update elasticsearch --restart=always
 
 ```bash
 # 获取镜像
-docker pull kibana:7.4.2 --registry-mirror=https://docker.mirrors.ustc.edu.cn
+docker pull kibana:7.6.2
 
 # 运行
-docker run --name kibana -e ELASTICSEARCH_HOSTS=http://192.168.56.10:9200 -p 5601:5601 -d kibana:7.4.2
+docker run --name kibana -e ELASTICSEARCH_HOSTS=http://192.168.56.10:9200 -p 5601:5601 -d kibana:7.6.2
 ```
 
 - 由于直接获取镜像速度太慢，使用`--registry-mirror`参数指定国内镜像源

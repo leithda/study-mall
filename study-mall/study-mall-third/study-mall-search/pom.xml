@@ -9,18 +9,27 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>
-        整合第三方文件服务
+        检索服务(ElasticSearch、...)
     </description>
 
-    <artifactId>study-mall-third-file</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>file-minio-service</module>
-    </modules>
+    <artifactId>study-mall-search</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
+    </dependencies>
 
 </project>

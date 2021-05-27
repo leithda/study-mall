@@ -1,0 +1,9 @@
+
+# 数据源配置
+logging:
+  level:
+    cn.study.product: debug
+spring:
+  elasticsearch:
+    rest:
+      uris: 192.168.56.10:9200
