@@ -1,8 +1,6 @@
-
-# 数据源配置
 logging:
   level:
-    cn.study.product: debug
+    cn.study.search: debug
 spring:
   elasticsearch:
     rest:
