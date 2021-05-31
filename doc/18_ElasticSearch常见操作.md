@@ -4,9 +4,9 @@
 
 
 
-# 基础操作
+## 基础操作
 
-## 保存数据
+### 保存数据
 
 可以使用`put`、`post`进行数据的保存。
 
@@ -21,7 +21,7 @@
 
 
 
-## 查询数据
+### 查询数据
 
 ```http
 GET http://192.168.56.10:9200/customer/external/1
@@ -48,9 +48,9 @@ GET http://192.168.56.10:9200/customer/external/1
 
 
 
-## 修改数据
+### 修改数据
 
-### _update更新
+#### _update更新
 
 ​	 对比原来数据，如果一致就什么都不处理，返回result为`noop`
 
@@ -65,7 +65,7 @@ POST http://192.168.56.10:9200/customer/external/1/_update
 
 ​	
 
-### 不带update更新
+#### 不带update更新
 
 PUT和POST一致，直接更新，会变更版本号。
 
@@ -78,7 +78,7 @@ POST http://192.168.56.10:9200/customer/external/1
 
 
 
-## 删除数据
+### 删除数据
 
 ```http
 DELETE http://192.168.56.10:9200/customer/external/1
@@ -86,7 +86,7 @@ DELETE http://192.168.56.10:9200/customer/external/1
 
 
 
-## 批量操作
+### 批量操作
 
 
 
@@ -113,6 +113,8 @@ POST /_bulk
 
 
 
+## 导入官方测试数据
+
 > 导入官方测试数据  https://gitee.com/ufo360/picgo2/raw/master/accounts.json 
 >
 > ```http
@@ -122,9 +124,9 @@ POST /_bulk
 
 
 
-# 进阶
+## 进阶
 
-## 两种查询
+### 两种查询
 
 ```http
 GET bank/_search?q=*&sort=account_number:asc
@@ -146,9 +148,9 @@ GET bank/_search
 
 
 
-## Query DSL
+### Query DSL
 
-### 基础语法
+#### 基础语法
 
 ```http
 GET bank/_search
@@ -170,7 +172,7 @@ GET bank/_search
 
 
 
-### _source返回部分字段
+#### _source返回部分字段
 
  ```http
  GET bank/_search
@@ -193,7 +195,7 @@ GET bank/_search
 
 
 
-### match查询
+#### match查询
 
 ```http
 GET bank/_search
@@ -209,7 +211,7 @@ GET bank/_search
 
 
 
-### match_phrase短语匹配
+#### match_phrase短语匹配
 
 ```http
 GET bank/_search
@@ -224,7 +226,7 @@ GET bank/_search
 
 
 
-### muti_match 多字段匹配
+#### muti_match 多字段匹配
 
 ```http
 GET bank/_search
@@ -241,7 +243,7 @@ GET bank/_search
 
 
 
-### bool 复合查询
+#### bool 复合查询
 
 ```http
 GET bank/_search
@@ -281,7 +283,7 @@ GET bank/_search
 
 
 
-### filter 结果过滤
+#### filter 结果过滤
 
 ```http
 GET bank/_search
@@ -304,7 +306,7 @@ GET bank/_search
 
 
 
-### term 查询
+#### term 查询
 
 ```http
 GET bank/_search
@@ -324,7 +326,7 @@ GET bank/_search
 
 
 
-### aggregations 执行聚合
+#### aggregations 执行聚合
 
  搜索address中包含mill的所有人的年龄分布以及平均年龄，但不显示这些人的详情。
 
@@ -428,9 +430,9 @@ GET bank/_search
 
 
 
-# 映射
+## 映射
 
-## mapping 创建
+### mapping 创建
 
 > GET bank/_mapping 查看映射
 
@@ -450,7 +452,7 @@ PUT /my-index
 
 
 
-## 添加新的映射字段 
+### 添加新的映射字段 
 
 ```http
 PUT /my-index/_mapping
@@ -466,7 +468,7 @@ PUT /my-index/_mapping
 
 
 
-## 修改映射&数据迁移
+### 修改映射&数据迁移
 
 已经存在的字段映射无法修改。
 

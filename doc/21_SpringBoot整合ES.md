@@ -213,9 +213,9 @@ POST /test/_search
 
 ## 复杂检索
 
-> 具体编码可参考[官方文档]([Java REST Client [7.6\] | Elastic](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.6/index.html))
+> 具体编码可参考[Java REST Client (Elastic)](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/index.html)
 >
-> 测试数据使用[18_ElasticSearch](./18_ElasticSearch常见操作.md)中导入的测试数据
+> 测试数据使用[18_ElasticSearch](./18_ElasticSearch常见操作.md#导入官方测试数据)中导入的测试数据章节。**已经导入的不用再次导入。**
 
 
 
