@@ -2,6 +2,8 @@
 
 
 
+# SpringBoot整合ES
+
 ## 加入Maven依赖
 
 ```xml
@@ -206,3 +208,94 @@ POST /test/_search
 
 
 > 其他接口类似，此章节主要完成CRUD简单操作
+
+
+
+## 复杂检索
+
+> 具体编码可参考[官方文档]([Java REST Client [7.6\] | Elastic](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.6/index.html))
+>
+> 测试数据使用[18_ElasticSearch](./18_ElasticSearch常见操作.md)中导入的测试数据
+
+
+
+代码如下：
+
+```java
+@SpringBootTest
+@RunWith(SpringRunner.class)
+public class SearchServiceApplicationTests {
+
+    @Autowired
+    private RestHighLevelClient client;
+
+    @Test
+    public void test() {
+        System.out.println(client);
+    }
+
+    @Test
+    public void searchData() throws Exception {
+        // 1、创建检索请求
+        SearchRequest searchRequest = new SearchRequest();
+        // 指定索引
+        searchRequest.indices("bank");
+        // 指定检索条件
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+        // 1.1、构建检索条件
+        sourceBuilder.query(QueryBuilders.matchQuery("address", "mill"));
+
+        // 1.2、按照年龄的值分布聚合
+        sourceBuilder.aggregation(AggregationBuilders.terms("ageAgg").field("age").size(10));
+
+        // 1.3、按照平均薪资聚合
+        sourceBuilder.aggregation(AggregationBuilders.avg("balanceAvg").field("balance"));
+
+        System.out.println("检索条件：" + sourceBuilder);
+
+        searchRequest.source(sourceBuilder);
+
+        // 2、执行检索
+        SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        // 3、分析结果
+        System.out.println(response);
+
+        // 3.1、获取所有查到的结果
+        SearchHits hits = response.getHits();
+        hits.forEach(hit -> {
+            String sourceAsString = hit.getSourceAsString();
+            Account account = JSON.parseObject(sourceAsString, Account.class);
+            System.out.println("account: " + account.toString());
+        });
+
+        // 3.2、获取聚合信息
+        Aggregations aggregations = response.getAggregations();
+        Terms ageAgg = aggregations.get("ageAgg");
+        ageAgg.getBuckets().forEach(bucket -> {
+            System.out.println("年龄：" + bucket.getKeyAsString() + "--> 数量： " + bucket.getDocCount());
+        });
+
+        Avg balanceAgg = aggregations.get("balanceAvg");
+        System.out.println("平均薪资：" + balanceAgg.getValue());
+    }
+
+    @Data
+    @ToString
+    public static class Account {
+        private int account_number;
+        private int balance;
+        private String firstname;
+        private String lastname;
+        private int age;
+        private String gender;
+        private String address;
+        private String employer;
+        private String email;
+        private String city;
+        private String state;
+    }
+}
+```
+

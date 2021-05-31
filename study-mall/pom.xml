@@ -32,6 +32,7 @@
         <mybatis-plus.version>3.4.0</mybatis-plus.version>
         <druid-version>1.2.5</druid-version>
         <minio.version>7.0.2</minio.version>
+        <fastjson.version>1.2.60</fastjson.version>
     </properties>
 
     <!-- 项目公共依赖 -->
@@ -83,12 +84,19 @@
                 <version>${druid-version}</version>
             </dependency>
 
+            <!-- MinIO客户端 -->
             <dependency>
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
             </dependency>
 
+            <!-- FastJson -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
