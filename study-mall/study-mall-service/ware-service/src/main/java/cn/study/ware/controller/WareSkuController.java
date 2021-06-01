@@ -1,14 +1,12 @@
 package cn.study.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import cn.study.common.to.SkuHasStockTo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import cn.study.ware.entity.WareSkuEntity;
 import cn.study.ware.service.WareSkuService;
@@ -29,6 +27,13 @@ import cn.study.common.utils.R;
 public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
+
+
+    @PostMapping("hasStockl")
+    public R getSkusHasStock(@RequestBody List<Long> skuIds){
+        List<SkuHasStockTo> skuHasStockVos = wareSkuService.getSkusHasStock(skuIds);
+        return R.ok().put("data",skuHasStockVos);
+    }
 
     /**
      * 列表

@@ -49,5 +49,11 @@ public interface AttrService extends IService<AttrEntity> {
      * @param attrGroupId 分组ID
      */
     PageUtils getAttrNoRelation(Map<String, Object> params, Long attrGroupId);
+
+    /**
+     * 获取给定属性集合中可以被检索的规格属性
+     * @param attrIds 规格属性Id集合
+     */
+    List<Long> selectSearchAttrIds(List<Long> attrIds);
 }
 

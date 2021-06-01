@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import cn.study.common.utils.PageUtils;
 import cn.study.product.entity.SkuInfoEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,5 +29,11 @@ public interface SkuInfoService extends IService<SkuInfoEntity> {
      * @param params 参数
      */
     PageUtils queryPageByCondition(Map<String, Object> params);
+
+    /**
+     * 根据SpuId获取所有的sku信息
+     * @param spuId SpuId
+     */
+    List<SkuInfoEntity> getSkusBySpuId(Long spuId);
 }
 

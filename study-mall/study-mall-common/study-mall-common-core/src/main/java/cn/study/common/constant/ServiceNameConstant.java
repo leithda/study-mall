@@ -6,5 +6,6 @@ public interface ServiceNameConstant {
     String ORDER_SERVICE = "order-service";
     String MEMBER_SERVICE = "member-service";
     String WARE_SERVICE = "ware-service";
-    String MINIO_SERVICE = "minio-service";
+    String FILE_SERVICE = "file-service";
+    String SEARCH_SERVICE = "search-service";
 }
