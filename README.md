@@ -50,3 +50,7 @@
 
  [21_SpringBoot整合ES](./doc/21_SpringBoot整合ES.md) 
 
+ [22_商品搜索](./doc/22_商品搜索.md) 
+
+ [23_整合thymeleaf渲染首页](./doc/23_整合thymeleaf渲染首页.md) 
+
