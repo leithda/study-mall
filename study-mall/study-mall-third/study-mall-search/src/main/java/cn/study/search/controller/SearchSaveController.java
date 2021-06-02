@@ -1,8 +1,8 @@
 package cn.study.search.controller;
 
 import cn.study.common.utils.R;
+import cn.study.search.component.SearchSaveComponent;
 import cn.study.search.entity.ProductEntity;
-import cn.study.search.service.ProductSaveService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +18,11 @@ import java.util.List;
 @RequestMapping("search/save")
 @RestController
 @Slf4j
-public class ElasticSearchSaveController {
+public class SearchSaveController {
+
 
     @Autowired
-    ProductSaveService productSaveService;
-
+    SearchSaveComponent searchSaveComponent;
     /**
      * 保存商品信息
      * @param entityList 商品信息
@@ -30,7 +30,7 @@ public class ElasticSearchSaveController {
     @PostMapping("product")
     public R productStatusUp(@RequestBody List<ProductEntity> entityList){
         try {
-            productSaveService.productStatusUp(entityList);
+            searchSaveComponent.productStatusUp(entityList);
         }catch (Exception e){
             log.error("保存商品信息报错:",e);
             return R.error();

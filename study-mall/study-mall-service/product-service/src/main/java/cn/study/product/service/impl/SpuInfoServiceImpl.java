@@ -238,8 +238,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Override
     public void up(Long spuId) {
-
-
         // 组装需要的数据
         // 1、查出当前SpuId对应的所有sku信息
         List<SkuInfoEntity> skuInfoEntityList = skuInfoService.getSkusBySpuId(spuId);
@@ -283,7 +281,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             }else {
                 esModel.setHasStock(finalSkuId2hasStockMap.get(sku.getSkuId()));
             }
-            // TODO: 热度评分，默认为0
             esModel.setHotScore(0L);
 
             BrandEntity brand = brandService.getById(sku.getBrandId());
@@ -297,14 +294,13 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return esModel;
         }).collect(Collectors.toList());
 
-        // TODO 将商品发送给ES进行保存。
         R r = searchFeignService.productStatusUp(skuEsModels);
         if(r.getCode() == 0){
             // 修改商品上架状态
             baseMapper.updateSpuStatus(spuId, ProductConstant.StatusEnum.SPU_UP.getCode());
         }else{
             // TODO 接口幂等性问题
-            /**
+            /*
              * Feign 的调用流程
              * 1、 构造请求数据，将请求数据转为Json
              * 2、 发送请求执行
