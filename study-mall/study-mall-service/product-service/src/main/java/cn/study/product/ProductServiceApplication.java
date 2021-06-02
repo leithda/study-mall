@@ -54,6 +54,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @ControllerAdvice
  *  1）、编写异常处理类，使用@ControllerAdvice。
  *  2）、使用@ExceptionHandler标注方法可以处理的异常。
+ *
+ * 5、模板引擎
+ *  1）、引入thymeleaf，关闭缓存
+ *  2）、静态资源放在static文件夹下，可以直接访问
+ *  3）、页面放在templates文件夹下
+ *
  */
 
 @SpringBootApplication
