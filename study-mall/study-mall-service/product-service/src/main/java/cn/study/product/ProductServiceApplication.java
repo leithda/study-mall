@@ -64,6 +64,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *  1）、引入data-redis-stater
  *  2）、简单配置redis的host等信息
  *  3)、使用spring boot 自动注入的 StringRedisTemplate 来操作Redis
+ *
+ * 7、使用Redisson作为分布式对象框架
+ *  1）、引入依赖
+ *  2）、配置Redisson
  */
 
 @SpringBootApplication

@@ -7,6 +7,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -36,6 +38,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Autowired
+    RedissonClient redissonClient;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -115,6 +120,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return getCatelogJsonFromDbWithRedisLock();
     }
 
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedisson() {
+
+        RLock rLock = redissonClient.getLock("catelogJson-lock");
+        rLock.lock();
+        Map<String, List<Catelog2Vo>> catelogJsonFromDb;
+        try {
+            // 加锁成功，执行业务
+            catelogJsonFromDb = getDateFromDbWithCache();
+        } finally {
+            rLock.unlock();
+        }
+
+        return catelogJsonFromDb;
+    }
+
+
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedisLock() {
         String uuid = UUID.randomUUID().toString();
         Boolean lock = redisTemplate.opsForValue().setIfPresent("lock", uuid, 300, TimeUnit.SECONDS);
@@ -151,12 +172,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public Map<String, List<Catelog2Vo>> getCategoryWithSync() {
         synchronized (this) {
             // 获得锁后检查是否缓存
-            String catelogJson = redisTemplate.opsForValue().get("catelogJson");
-            if (StringUtils.isNotEmpty(catelogJson)) {
-                return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
-                });
-            }
-
             return getDateFromDbWithCache();
         }
     }
@@ -168,6 +183,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             });
         }
 
+        Map<String, List<Catelog2Vo>> dateFromDb = getDateFromDb();
+        String s = JSON.toJSONString(dateFromDb);
+        redisTemplate.opsForValue().set("catelogJson", s);
+        return dateFromDb;
+    }
+
+    private Map<String, List<Catelog2Vo>> getDateFromDb() {
         List<CategoryEntity> allCategoryEntityList = baseMapper.selectList(null);
 
         // 查出所有1级分类
@@ -195,9 +217,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                     return catelog2Vo;
                 }).collect(Collectors.toList());
             }
-
-            String s = JSON.toJSONString(catelog2Vos);
-            redisTemplate.opsForValue().set("catelogJson", s);
             return catelog2Vos;
         }));
     }

@@ -33,6 +33,7 @@
         <druid-version>1.2.5</druid-version>
         <minio.version>7.0.2</minio.version>
         <fastjson.version>1.2.60</fastjson.version>
+        <redisson.version>3.15.4</redisson.version>
     </properties>
 
     <!-- 项目公共依赖 -->
@@ -97,6 +98,14 @@
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
             </dependency>
+
+            <!-- Redisson 分布式对象框架 -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>
