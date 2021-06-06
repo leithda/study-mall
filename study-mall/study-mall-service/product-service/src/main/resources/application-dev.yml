@@ -10,4 +10,4 @@ spring:
     cache: false
 logging:
   level:
-    cn.study.product: debug
+    cn.study.product: error

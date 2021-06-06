@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 测试 Nacos 配置中心
  */
 @RestController
-@RequestMapping("nacos")
+@RequestMapping("product/nacos")
 @RefreshScope
 public class NacosController {
 
