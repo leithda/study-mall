@@ -8,6 +8,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   thymeleaf:
     cache: false
+  redis:
+    host: 192.168.56.10
+    port: 6379
 logging:
   level:
     cn.study.product: error

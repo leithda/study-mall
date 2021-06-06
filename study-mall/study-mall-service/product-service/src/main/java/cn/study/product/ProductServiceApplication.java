@@ -60,6 +60,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *  2）、静态资源放在static文件夹下，可以直接访问
  *  3）、页面放在templates文件夹下
  *
+ * 6、整合Redis
+ *  1）、引入data-redis-stater
+ *  2）、简单配置redis的host等信息
+ *  3)、使用spring boot 自动注入的 StringRedisTemplate 来操作Redis
  */
 
 @SpringBootApplication

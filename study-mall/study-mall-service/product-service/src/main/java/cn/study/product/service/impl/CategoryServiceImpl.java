@@ -1,10 +1,14 @@
 package cn.study.product.service.impl;
 
+import cn.study.common.utils.StringUtils;
 import cn.study.product.entity.vo.Catelog2Vo;
 import cn.study.product.service.CategoryBrandRelationService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -27,6 +31,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     CategoryBrandRelationService categoryBrandRelationService;
+
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -98,6 +105,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catelog2Vo>> getCatelogJson() {
+        String catelogJson = redisTemplate.opsForValue().get("catelogJson");
+        if(StringUtils.isEmpty(catelogJson)){
+            Map<String, List<Catelog2Vo>> catelogJsonFromDb = getCatelogJsonFromDb();
+            String s = JSON.toJSONString(catelogJsonFromDb);
+            redisTemplate.opsForValue().set("catelogJson",s);
+            return catelogJsonFromDb;
+        }
+        return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+        });
+    }
+
+
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDb() {
 
         List<CategoryEntity> allCategoryEntityList = baseMapper.selectList(null);
 
