@@ -67,3 +67,28 @@ public class RedissonConfig {
 
 
 
+## 业务代码整合
+
+```java
+public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedisson() {
+    String catelogJson = redisTemplate.opsForValue().get("catelogJson");
+    if (StringUtils.isNotEmpty(catelogJson)) {
+        return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+        });
+    }
+    RLock rLock = redissonClient.getLock("catelogJson-lock");
+    rLock.lock();
+    Map<String, List<Catelog2Vo>> catelogJsonFromDb;
+    try {
+        // 加锁成功，执行业务
+        catelogJsonFromDb = getDateFromDbWithCache();
+    } finally {
+        rLock.unlock();
+    }
+
+    return catelogJsonFromDb;
+}
+```
+
+
+

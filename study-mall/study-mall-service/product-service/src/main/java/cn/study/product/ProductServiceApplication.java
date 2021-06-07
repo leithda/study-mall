@@ -2,6 +2,7 @@ package cn.study.product;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
@@ -68,7 +69,29 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 7、使用Redisson作为分布式对象框架
  *  1）、引入依赖
  *  2）、配置Redisson
+ *
+ * 8、整合Spring Cache简化缓存开发
+ *  1）、引入依赖
+ *      spring-boot-starter-data-redis,spring-boot-starter-cache
+ *  2)、写配置
+ *      (1)、自动配置了哪些
+ *          CacheAutoConfiguration 会导入 RedisCacheConfiguration
+ *          自动配好了缓存管理器 RedisCacheManager
+ *      (2)、配置使用 redis 作为缓存
+ *          spring.cache.type=redis
+ *  3)、测试使用缓存
+ *      - `@Cacheable`: Triggers cache population.触发将数据保存到缓存
+ *      - `@CacheEvict`: Triggers cache eviction.删除缓存
+ *      - `@CachePut`: Updates the cache without interfering with the method execution.不影响方法执行更新缓存
+ *      - `@Caching`: Regroups multiple cache operations to be applied on a method.组合以上多个操作
+ *      - `@CacheConfig`: Shares some common cache-related settings at class-level.在类级别共享缓存的相同配置
+ *      (1)、开启缓存功能 @EnableCaching
+ *      (2)、使用注解完成缓存操作
+ *  4)、原理
+ *      CacheAutoConfiguration -> RedisCacheConfiguration -> 注入了 RedisCacheManager -> 初始化所有的缓存 -> 存在自定义配置使用自定义，否则使用默认配置
+ *      -> 自定义配置只需要注入 redisCacheConfiguration 即可
  */
+
 
 @SpringBootApplication
 @EnableDiscoveryClient

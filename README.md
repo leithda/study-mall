@@ -64,3 +64,4 @@
 
  [28_整合Redisson分布式锁](./doc/28_整合Redisson分布式锁.md) 
 
+ [29_整合SpringCache](./doc/29_整合SpringCache.md) 

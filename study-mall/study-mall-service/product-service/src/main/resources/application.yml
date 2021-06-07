@@ -10,6 +10,14 @@ spring:
         server-addr: 192.168.56.10:8848
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+  cache:
+    type: redis
+    redis:
+      time-to-live: 360000 # 缓存过期时间，一小时
+#      key-prefix: CACHE_ # 前缀，使用Redis命名分区作为前缀
+      cache-null-values: true # 缓存空值
+      use-key-prefix: true
+#    cache-names:
 
 # 端口
 server:

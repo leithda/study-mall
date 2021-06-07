@@ -10,6 +10,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -97,6 +99,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      *
      * @param category 分类
      */
+    @CacheEvict(value = "category",key = "'getLevel1Categorys'")
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCascade(CategoryEntity category) {
@@ -105,8 +108,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
     }
 
+    @Cacheable(value = {"category"},key = "#root.method.name") // 当前方法可缓存，缓存名称空间category,缓存键为 level1Categorys
     @Override
-    public List<CategoryEntity> getLevel1Categorys() {
+    public List<CategoryEntity>  getLevel1Categorys() {
         return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
     }
 
@@ -117,11 +121,15 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
          * 2、设置过期时间(加随机值)，解决缓存雪崩
          * 3、加锁，解决缓存击穿
          */
-        return getCatelogJsonFromDbWithRedisLock();
+        return getCatelogJsonFromDbWithRedisson();
     }
 
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedisson() {
-
+        String catelogJson = redisTemplate.opsForValue().get("catelogJson");
+        if (StringUtils.isNotEmpty(catelogJson)) {
+            return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+            });
+        }
         RLock rLock = redissonClient.getLock("catelogJson-lock");
         rLock.lock();
         Map<String, List<Catelog2Vo>> catelogJsonFromDb;
