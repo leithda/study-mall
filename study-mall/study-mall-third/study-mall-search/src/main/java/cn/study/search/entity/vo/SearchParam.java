@@ -27,6 +27,11 @@ public class SearchParam {
     private String sort;
 
     /**
+     * 分页参数
+     */
+    private Integer pageNum = 1;
+
+    /**
      * 是否只显示有货
      */
     private Integer hasStock;
