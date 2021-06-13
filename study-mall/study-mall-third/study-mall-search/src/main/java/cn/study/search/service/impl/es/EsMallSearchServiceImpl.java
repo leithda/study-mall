@@ -184,7 +184,7 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
 
         // 3.2 分类聚合
         TermsAggregationBuilder catelog_agg = AggregationBuilders.terms("catelog_agg");
-        catelog_agg.field("catelog").size(20);
+        catelog_agg.field("catelogId").size(20);
         // 3.2.1 分类名称子聚合
         catelog_agg.subAggregation(AggregationBuilders.terms("catelog_name_agg").field("catelogName.keyword").size(1));
         sourceBuilder.aggregation(catelog_agg);
