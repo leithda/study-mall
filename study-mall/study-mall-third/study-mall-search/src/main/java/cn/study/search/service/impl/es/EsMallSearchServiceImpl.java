@@ -20,7 +20,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
@@ -222,7 +221,7 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
                 String jsonString = hit.getSourceAsString();
                 EsProductEntity EsProductEntity = JSON.parseObject(jsonString, EsProductEntity.class);
                 // 高亮
-                if(StringUtils.isNotEmpty(param.getKeyword())){
+                if (StringUtils.isNotEmpty(param.getKeyword())) {
                     HighlightField skuTitle = hit.getHighlightFields().get("skuTitle");
                     String highLightTitle = skuTitle.getFragments()[0].string();
                     EsProductEntity.setSkuTitle(highLightTitle);
@@ -310,6 +309,14 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
         // 总页数
         int totalPages = ((int) hits.getTotalHits().value + PageConstant.SIZE - 1) / PageConstant.SIZE;
         result.setTotalPages(totalPages);
+        // 导航页码处理
+
+        List<Integer> pageNavs = Lists.newArrayList();
+        for (int i = Math.max(param.getPageNum() - 3, 1); i < Math.min(param.getPageNum() + 3, totalPages); i++) {
+            pageNavs.add(i);
+        }
+        result.setPageNavs(pageNavs);
+
         return result;
     }
 }

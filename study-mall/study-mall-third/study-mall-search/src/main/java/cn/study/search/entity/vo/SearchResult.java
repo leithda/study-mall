@@ -32,6 +32,11 @@ public class SearchResult {
     private Integer totalPages;
 
     /**
+     * 前端导航分页
+     */
+    private List<Integer> pageNavs;
+
+    /**
      * 所有品牌
      */
     List<BrandVo> brands;
