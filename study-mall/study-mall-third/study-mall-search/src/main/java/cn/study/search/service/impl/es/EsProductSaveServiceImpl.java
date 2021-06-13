@@ -1,7 +1,7 @@
 package cn.study.search.service.impl.es;
 
 import cn.study.search.dao.es.EsProductRepository;
-import cn.study.search.entity.ProductEntity;
+import cn.study.search.entity.EsProductEntity;
 import cn.study.search.service.es.EsProductSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class EsProductSaveServiceImpl implements EsProductSaveService {
     EsProductRepository repository;
 
     @Override
-    public void productStatusUp(List<ProductEntity> entityList) {
+    public void productStatusUp(List<EsProductEntity> entityList) {
         repository.saveAll(entityList);
     }
 }

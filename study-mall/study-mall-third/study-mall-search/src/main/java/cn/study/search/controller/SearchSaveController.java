@@ -2,7 +2,7 @@ package cn.study.search.controller;
 
 import cn.study.common.utils.R;
 import cn.study.search.component.SearchSaveComponent;
-import cn.study.search.entity.ProductEntity;
+import cn.study.search.entity.EsProductEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +28,7 @@ public class SearchSaveController {
      * @param entityList 商品信息
      */
     @PostMapping("product")
-    public R productStatusUp(@RequestBody List<ProductEntity> entityList){
+    public R productStatusUp(@RequestBody List<EsProductEntity> entityList){
         try {
             searchSaveComponent.productStatusUp(entityList);
         }catch (Exception e){

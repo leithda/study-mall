@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Document(indexName = ElasticIndexConstant.PRODUCT_INDEX)
 @ToString
-public class ProductEntity {
+public class EsProductEntity {
     /**
      * SkuID
      */

@@ -3,19 +3,32 @@ package cn.study.search.service.impl.es;
 import cn.study.common.constant.ElasticIndexConstant;
 import cn.study.common.utils.StringUtils;
 import cn.study.search.constant.PageConstant;
+import cn.study.search.entity.EsProductEntity;
 import cn.study.search.entity.vo.SearchParam;
 import cn.study.search.entity.vo.SearchResult;
 import cn.study.search.service.es.EsMallSearchService;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.common.utils.Objects;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.search.join.ScoreMode;
+import org.assertj.core.util.Lists;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -25,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EsMallSearchServiceImpl implements EsMallSearchService {
@@ -43,7 +57,7 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
             SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
 
             // 3、封装响应数据
-            result = buildSearchResult(searchResponse);
+            result = buildSearchResult(searchResponse, param);
         } catch (IOException ignored) {
 
         }
@@ -51,15 +65,6 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
         return result;
     }
 
-    /**
-     * 构建响应结果
-     *
-     * @param searchResponse 检索响应
-     */
-    private SearchResult buildSearchResult(SearchResponse searchResponse) {
-        System.out.println(searchResponse);
-        return null;
-    }
 
     /**
      * 构建检索请求
@@ -157,7 +162,7 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
         sourceBuilder.size(PageConstant.SIZE);
 
         // 2.3 高亮
-        if(StringUtils.isNotEmpty(keyword)){
+        if (StringUtils.isNotEmpty(keyword)) {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
             highlightBuilder.field("skuTitle");
             highlightBuilder.preTags("<b style='color:red'>");
@@ -179,7 +184,7 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
 
         // 3.2 分类聚合
         TermsAggregationBuilder catelog_agg = AggregationBuilders.terms("catelog_agg");
-        catelog_agg.field("catelog_agg").size(20);
+        catelog_agg.field("catelog").size(20);
         // 3.2.1 分类名称子聚合
         catelog_agg.subAggregation(AggregationBuilders.terms("catelog_name_agg").field("catelogName.keyword").size(1));
         sourceBuilder.aggregation(catelog_agg);
@@ -193,7 +198,111 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
         sourceBuilder.aggregation(attr_agg);
 
 
-        System.out.println("构建的DSL语句:\n"+sourceBuilder);
+        System.out.println("构建的DSL语句:\n" + sourceBuilder);
         return new SearchRequest(new String[]{ElasticIndexConstant.PRODUCT_INDEX}, sourceBuilder);
+    }
+
+
+    /**
+     * 构建响应结果
+     *
+     * @param searchResponse 检索响应
+     * @param param          页面请求参数
+     */
+    private SearchResult buildSearchResult(SearchResponse searchResponse, SearchParam param) {
+        System.out.println(searchResponse);
+        SearchResult result = new SearchResult();
+
+        // 1、 所有查询到的商品
+        SearchHits hits = searchResponse.getHits();
+        List<EsProductEntity> EsProductEntityList = Lists.newArrayList();
+        if (ArrayUtils.isNotEmpty(hits.getHits())) {
+            for (SearchHit hit : hits.getHits()) {
+                String jsonString = hit.getSourceAsString();
+                EsProductEntity EsProductEntity = JSON.parseObject(jsonString, EsProductEntity.class);
+                EsProductEntityList.add(EsProductEntity);
+            }
+        }
+        result.setProducts(EsProductEntityList);
+
+        Aggregations aggregations = searchResponse.getAggregations();
+
+        // 2、 当前所有商品涉及的所有属性
+        List<SearchResult.AttrVo> attrVos = Lists.newArrayList();
+        ParsedNested attrAgg = aggregations.get("attr_agg");
+        ParsedLongTerms attrIdAgg = attrAgg.getAggregations().get("attr_id_agg");
+        for (Terms.Bucket bucket : attrIdAgg.getBuckets()) {
+            SearchResult.AttrVo attrVo = new SearchResult.AttrVo();
+
+            // 属性ID
+            Long attrId = bucket.getKeyAsNumber().longValue();
+            attrVo.setAttrId(attrId);
+
+            // 属性名
+            String attrName = ((ParsedStringTerms) bucket.getAggregations().get("attr_name_agg")).getBuckets().get(0).getKeyAsString();
+            attrVo.setAttrName(attrName);
+
+            // 属性值
+            List<String> attrValue = ((ParsedStringTerms) bucket.getAggregations().get("attr_value_agg")).getBuckets()
+                    .stream()
+                    .map(MultiBucketsAggregation.Bucket::getKeyAsString)
+                    .collect(Collectors.toList());
+            attrVo.setAttrValue(attrValue);
+
+            attrVos.add(attrVo);
+
+        }
+
+        result.setAttrs(attrVos);
+
+        // 3、 当前所有商品涉及的品牌信息
+        List<SearchResult.BrandVo> brandVos = Lists.newArrayList();
+        ParsedLongTerms brandAgg = aggregations.get("brand_agg");
+        for (Terms.Bucket bucket : brandAgg.getBuckets()) {
+            SearchResult.BrandVo brandVo = new SearchResult.BrandVo();
+            // 获取品牌ID
+            Long brandId = bucket.getKeyAsNumber().longValue();
+            brandVo.setBrandId(brandId);
+            // 品牌名
+            String brandName = ((ParsedStringTerms) bucket.getAggregations().get("brand_name_agg")).getBuckets().get(0).getKeyAsString();
+            brandVo.setBrandName(brandName);
+
+            // 品牌图片
+            String brandImg = ((ParsedStringTerms) bucket.getAggregations().get("brand_img_agg")).getBuckets().get(0).getKeyAsString();
+            brandVo.setBrandImg(brandImg);
+
+            brandVos.add(brandVo);
+        }
+        result.setBrands(brandVos);
+
+
+        // 4、 当前商品涉及的分类信息
+        List<SearchResult.CatelogVo> catelogVos = Lists.newArrayList();
+        ParsedLongTerms catelogAgg = aggregations.get("catelog_agg");
+        List<? extends Terms.Bucket> catelogAggBuckets = catelogAgg.getBuckets();
+        for (Terms.Bucket catelogAggBucket : catelogAggBuckets) {
+            SearchResult.CatelogVo catelogVo = new SearchResult.CatelogVo();
+            // 获取分类ID
+            String keyAsString = catelogAggBucket.getKeyAsString();
+            catelogVo.setCatelogId(Long.parseLong(keyAsString));
+
+            // 获取分类名称
+            ParsedStringTerms catelogNameAgg = catelogAggBucket.getAggregations().get("catelog_name_agg");
+            String catelogName = catelogNameAgg.getBuckets().get(0).getKeyAsString();
+            catelogVo.setCatelogName(catelogName);
+            catelogVos.add(catelogVo);
+        }
+        result.setCatelogs(catelogVos);
+
+
+        // 5、 分页信息
+        // 当前页
+        result.setPageNum(param.getPageNum());
+        // 总记录数
+        result.setTotal(hits.getTotalHits().value);
+        // 总页数
+        int totalPages = ((int) hits.getTotalHits().value + PageConstant.SIZE - 1) / PageConstant.SIZE;
+        result.setTotalPages(totalPages);
+        return result;
     }
 }

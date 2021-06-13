@@ -1,6 +1,6 @@
 package cn.study.search.entity.vo;
 
-import cn.study.search.entity.ProductEntity;
+import cn.study.search.entity.EsProductEntity;
 import lombok.Data;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public class SearchResult {
     /**
      * 商品信息
      */
-    List<ProductEntity> products;
+    List<EsProductEntity> products;
 
     /**
      * 当前页
@@ -44,7 +44,7 @@ public class SearchResult {
     /**
      * 所有属性
      */
-    List<CatelogVo> attrs;
+    List<AttrVo> attrs;
 
     // ================= 以上是返回给页面的所有信息 =================
 

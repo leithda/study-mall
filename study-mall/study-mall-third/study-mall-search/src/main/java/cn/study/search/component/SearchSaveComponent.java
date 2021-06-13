@@ -1,6 +1,6 @@
 package cn.study.search.component;
 
-import cn.study.search.entity.ProductEntity;
+import cn.study.search.entity.EsProductEntity;
 import cn.study.search.service.es.EsProductSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ public class SearchSaveComponent {
     @Autowired
     EsProductSaveService esProductSaveService;
 
-    public void productStatusUp(List<ProductEntity> entityList) {
+    public void productStatusUp(List<EsProductEntity> entityList) {
         esProductSaveService.productStatusUp(entityList);
     }
 
