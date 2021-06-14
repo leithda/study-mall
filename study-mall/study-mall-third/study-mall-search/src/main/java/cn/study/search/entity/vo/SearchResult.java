@@ -51,7 +51,19 @@ public class SearchResult {
      */
     List<AttrVo> attrs;
 
+    List<NavVo> navs;
+
     // ================= 以上是返回给页面的所有信息 =================
+
+    /**
+     * 面包屑导航实体
+     */
+    @Data
+    public static class NavVo{
+        private String navName;
+        private String navValue;
+        private String link;
+    }
 
     /**
      * 品牌

@@ -1,14 +1,18 @@
 package cn.study.search.service.impl.es;
 
 import cn.study.common.constant.ElasticIndexConstant;
+import cn.study.common.utils.R;
 import cn.study.common.utils.StringUtils;
 import cn.study.search.constant.PageConstant;
 import cn.study.search.entity.EsProductEntity;
+import cn.study.search.entity.vo.AttrResponseVo;
 import cn.study.search.entity.vo.SearchParam;
 import cn.study.search.entity.vo.SearchResult;
+import cn.study.search.feign.ProductFeignService;
 import cn.study.search.service.es.EsMallSearchService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.common.utils.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.search.join.ScoreMode;
@@ -37,14 +41,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class EsMallSearchServiceImpl implements EsMallSearchService {
 
     @Autowired
     RestHighLevelClient esClient;
+
+    @Autowired
+    ProductFeignService productFeignService;
 
     @Override
     public SearchResult search(SearchParam param) {
@@ -123,13 +134,13 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
 
         // 1.2.4 按照是否库存查询
         Integer hasStock = param.getHasStock();
-        if (Objects.nonNull(hasStock)) {
-            boolQuery.filter(QueryBuilders.termQuery("hasStock", hasStock == 1));
+        if (Objects.nonNull(hasStock) && hasStock == 1) {
+            boolQuery.filter(QueryBuilders.termQuery("hasStock", true));
         }
 
         // 1.2.5 按照价格区间查询
         String skuPrice = param.getSkuPrice();
-        if (StringUtils.isNotEmpty(skuPrice)) {
+        if (StringUtils.isNotEmpty(skuPrice) && !"_".equals(skuPrice)) {
             // 1_500, 200_ , _2000
             RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("skuPrice");
             String[] priceArr = skuPrice.split("_");
@@ -198,7 +209,7 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
         sourceBuilder.aggregation(attr_agg);
 
 
-        System.out.println("构建的DSL语句:\n" + sourceBuilder);
+        log.info("构建的DSL语句：{}", sourceBuilder);
         return new SearchRequest(new String[]{ElasticIndexConstant.PRODUCT_INDEX}, sourceBuilder);
     }
 
@@ -309,14 +320,57 @@ public class EsMallSearchServiceImpl implements EsMallSearchService {
         // 总页数
         int totalPages = ((int) hits.getTotalHits().value + PageConstant.SIZE - 1) / PageConstant.SIZE;
         result.setTotalPages(totalPages);
-        // 导航页码处理
 
+        // 导航页码处理
         List<Integer> pageNavs = Lists.newArrayList();
         for (int i = Math.max(param.getPageNum() - 3, 1); i < Math.min(param.getPageNum() + 3, totalPages); i++) {
             pageNavs.add(i);
         }
         result.setPageNavs(pageNavs);
 
+        // 6、面包屑导航
+        List<SearchResult.NavVo> navs = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(param.getAttrs())) {
+            navs = param.getAttrs().stream().map(attr -> {
+                // 分析 attrs 传过来的参数值
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                String[] s = attr.split("_");
+                R r = productFeignService.attrInfo(Long.parseLong(s[0]));
+                if (r.getCode() == 0) {
+                    LinkedHashMap data = (LinkedHashMap) r.get("attr");
+                    navVo.setNavName((String) data.get("attrName"));
+                } else {
+                    navVo.setNavName(s[0]);
+                }
+                navVo.setNavValue(s[1]);
+
+                String replace = replaceQueryString(param, attr, "attrs");
+                navVo.setLink("http://search.mall.com/list.html?" + replace);
+
+                return navVo;
+            }).collect(Collectors.toList());
+        }
+        result.setNavs(navs);
+
         return result;
+    }
+
+    /**
+     * 替换查询字符串
+     *
+     * @param param 查询参数
+     * @param value 替换的值
+     * @param key   替换的属性
+     */
+    private String replaceQueryString(SearchParam param, String value, String key) {
+        // 取消后的跳转路径
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(value, "UTF-8");
+            encode = encode.replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return param.get_queryString().replace("&" + key + "=" + encode, "");
     }
 }

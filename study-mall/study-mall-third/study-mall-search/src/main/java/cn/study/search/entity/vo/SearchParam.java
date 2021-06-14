@@ -51,4 +51,9 @@ public class SearchParam {
      */
     private List<String> attrs;
 
+    /**
+     * 请求
+     */
+    private String _queryString;
+
 }
