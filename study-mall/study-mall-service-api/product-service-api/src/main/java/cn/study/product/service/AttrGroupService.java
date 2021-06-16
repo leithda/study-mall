@@ -1,6 +1,7 @@
 package cn.study.product.service;
 
 import cn.study.product.entity.vo.AttrGroupWithAttrsVo;
+import cn.study.product.entity.vo.SkuItemVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.study.common.utils.PageUtils;
 import cn.study.product.entity.AttrGroupEntity;
@@ -31,5 +32,12 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
      * @param catelogId 分类ID
      */
     List<AttrGroupWithAttrsVo> getAttrGroupWithAttrByCatelogId(Long catelogId);
+
+    /**
+     * 根据 spuid 获取spu的属性规格信息
+     * @param spuId spuID
+     * @param catalogId 分类ID
+     */
+    List<SkuItemVo.SpuItemAttrGroupVo> getAttrGroupWithAttrBySpuId(Long spuId, Long catalogId);
 }
 

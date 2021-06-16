@@ -3,7 +3,7 @@
 
 <mapper namespace="cn.study.product.dao.AttrGroupDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="cn.study.product.entity.AttrGroupEntity" id="attrGroupMap">
         <result property="attrGroupId" column="attr_group_id"/>
         <result property="attrGroupName" column="attr_group_name"/>
@@ -12,6 +12,32 @@
         <result property="icon" column="icon"/>
         <result property="catelogId" column="catelog_id"/>
     </resultMap>
+
+    <!-- 嵌套属性，自定义结果集 -->
+    <resultMap id="spuItemAttrGroupVo" type="cn.study.product.entity.vo.SkuItemVo$SpuItemAttrGroupVo">
+        <result column="attr_group_name" property="groupName"/>
+        <collection property="attrs" ofType="cn.study.product.entity.vo.SkuItemVo$SpuBaseAttrVo">
+            <result column="attr_name" property="attrName"/>
+            <result column="attr_value" property="attrValue"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAttrGroupWithAttrBySpuId"
+            resultMap="spuItemAttrGroupVo">
+        SELECT
+            pav.spu_id,
+            ag.attr_group_name,
+            aar.attr_id,
+            pav.attr_name,
+            pav.attr_value
+        FROM
+            `pms_attr_group` ag
+                LEFT JOIN `pms_attr_attrgroup_relation` aar ON aar.attr_group_id = ag.attr_group_id
+                LEFT JOIN `pms_product_attr_value` pav on pav.attr_id = aar.attr_id
+                AND pav.attr_id = aar.attr_id
+        WHERE
+            ag.catelog_id = #{catalogId} and pav.spu_id = #{spuId};
+    </select>
 
 
 </mapper>

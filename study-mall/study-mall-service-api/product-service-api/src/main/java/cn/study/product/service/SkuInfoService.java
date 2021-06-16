@@ -1,5 +1,6 @@
 package cn.study.product.service;
 
+import cn.study.product.entity.vo.SkuItemVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.study.common.utils.PageUtils;
 import cn.study.product.entity.SkuInfoEntity;
@@ -35,5 +36,11 @@ public interface SkuInfoService extends IService<SkuInfoEntity> {
      * @param spuId SpuId
      */
     List<SkuInfoEntity> getSkusBySpuId(Long spuId);
+
+    /**
+     * 根据 skuId 查询商品详情
+     * @param skuId skuId
+     */
+    SkuItemVo item(Long skuId);
 }
 

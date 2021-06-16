@@ -3,6 +3,7 @@ package cn.study.product.service.impl;
 import cn.study.common.utils.StringUtils;
 import cn.study.product.entity.AttrEntity;
 import cn.study.product.entity.vo.AttrGroupWithAttrsVo;
+import cn.study.product.entity.vo.SkuItemVo;
 import cn.study.product.service.AttrService;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.google.common.collect.Lists;
@@ -84,6 +85,12 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         }
 
         return Lists.newArrayList();
+    }
+
+    @Override
+    public List<SkuItemVo.SpuItemAttrGroupVo> getAttrGroupWithAttrBySpuId(Long spuId, Long catalogId) {
+        // 1、 查出当前spu对应的所有属性分组信息，以及当前分组下的所有属性对应的值
+        return baseMapper.getAttrGroupWithAttrBySpuId(spuId, catalogId);
     }
 
 }
