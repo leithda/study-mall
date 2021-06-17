@@ -595,9 +595,10 @@
 							<div class="box-attr clear" th:each="attr:${item.saleAttr}">
 								<dl>
 									<dt>选择[[${attr.attrName}]]</dt>
-									<dd th:each="val:${#strings.listSplit(attr.attrValues,',')}">
-										<a href="/static/item/#">
-											<!--<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" />--> [[${val}]]
+									<dd th:each="val:${attr.attrValues}" >
+										<a th:attr="class=${#lists.contains(#strings.listSplit(val.skuIds,','),item.info.skuId.toString())?'sku_attr_value checked':'sku_attr_value'},
+										   skus=${val.skuIds}">
+											<!--<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" />--> [[${val.attrValue}]]
 										</a>
 									</dd>
 								</dl>
@@ -1265,6 +1266,37 @@
 	<script src="/static/item/js/jquery1.9.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/item/js/js.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
+		$(".sku_attr_value").click(function(){
+			// 1、点击的元素先添加上自定义属性，为了识别我们刚才点击的sku值
+			var skus = new Array();
+
+			// 去掉相同属性的checked样式
+			$(this).parent().parent().find(".sku_attr_value").removeClass("checked");
+			$(this).addClass("checked");
+
+			// 2、获取另外的skus组合
+			$("a[class='sku_attr_value checked']").each(function(){
+				skus.push($(this).attr("skus").split(","));
+			})
+			console.log(skus);
+
+			// 3、取交集
+			var filterElement = skus[0];
+			for (let i = 1; i < skus.length; i++) {
+				filterElement = $(filterElement).filter(skus[i]);
+			}
+
+			console.log(filterElement);
+
+			// 4、跳转
+			location.href = "http://item.mall.com/"+filterElement[0]+".html";
+		})
+		
+		$(function(){
+			$(".sku_attr_value").parent().css({"border":"solid 1px #CCC"});
+			$("a[class='sku_attr_value checked']").parent().css({"border":"solid 1px red"});
+		})
+
 	</script>
 
 </html>

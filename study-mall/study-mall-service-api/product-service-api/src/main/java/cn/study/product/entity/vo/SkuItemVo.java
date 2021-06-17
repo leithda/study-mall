@@ -43,7 +43,7 @@ public class SkuItemVo {
         /**
          * 属性值
          */
-        private String attrValues;
+        private List<AttrValueWithSkuIdVo> attrValues;
     }
 
 
