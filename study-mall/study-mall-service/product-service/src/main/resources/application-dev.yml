@@ -14,3 +14,8 @@ spring:
 logging:
   level:
     cn.study.product: error
+product:
+  thread:
+    core-size: 50
+    max-size: 200
+    keep-alive-time: 10
