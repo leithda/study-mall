@@ -15,6 +15,7 @@
     <modules>
         <module>study-mall-file</module>
         <module>study-mall-search</module>
+        <module>study-mall-sms</module>
     </modules>
 
     <properties>
@@ -23,7 +24,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>cn.leithda</groupId>
             <artifactId>study-mall-common-core</artifactId>
@@ -35,6 +35,7 @@
             <artifactId>study-mall-common-nacos</artifactId>
             <version>1.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

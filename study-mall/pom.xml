@@ -35,6 +35,7 @@
         <minio.version>7.0.2</minio.version>
         <fastjson.version>1.2.60</fastjson.version>
         <redisson.version>3.15.4</redisson.version>
+        <ali-sdk.version>4.5.16</ali-sdk.version>
     </properties>
 
     <!-- 项目公共依赖 -->
@@ -105,6 +106,13 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
                 <version>${redisson.version}</version>
+            </dependency>
+
+            <!-- 阿里云SMS依赖 -->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>aliyun-java-sdk-core</artifactId>
+                <version>${ali-sdk.version}</version>
             </dependency>
 
         </dependencies>

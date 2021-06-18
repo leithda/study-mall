@@ -15,7 +15,7 @@ spring:
       max-request-size: 100MB
 # 端口
 server:
-  port: 19000
+  port: 19010
 
 logging:
   level:
