@@ -1,0 +1,10 @@
+
+# 数据源配置
+spring:
+  thymeleaf:
+    cache: false
+  redis:
+    host: 192.168.56.10
+    port: 6379
+
+
