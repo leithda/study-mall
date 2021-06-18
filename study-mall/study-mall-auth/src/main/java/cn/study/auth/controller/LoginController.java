@@ -1,18 +1,27 @@
 package cn.study.auth.controller;
 
 import cn.study.auth.constant.AuthConstant;
+import cn.study.auth.entity.vo.UserRegistVo;
 import cn.study.auth.feign.SmsFeignService;
 import cn.study.common.utils.R;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-@RestController
+@Controller
 public class LoginController {
 
     @Autowired
@@ -22,6 +31,7 @@ public class LoginController {
     SmsFeignService smsFeignService;
 
     @GetMapping("sms/sendCode")
+    @ResponseBody
     public R sendCode(@RequestParam("phone") String phone) {
         String redisValue = stringRedisTemplate.opsForValue().get(AuthConstant.SMS_CODE_PREFIX + phone);
         if (redisValue != null) {
@@ -51,6 +61,43 @@ public class LoginController {
         } else {
             return R.error();
         }
+    }
+
+    /**
+     * 注册成功跳至登录页
+     *
+     * @return
+     */
+    @PostMapping("/regist")
+    public String regist(@Valid UserRegistVo userRegistVo, BindingResult result,
+            /* 模拟重定向携带数据*/RedirectAttributes redirectAttributes) {
+        Map<String, String> map = new HashMap<>(16);
+        // 验证码校验
+        String redisValue = stringRedisTemplate.opsForValue().get(AuthConstant.SMS_CODE_PREFIX + userRegistVo.getPhone());
+        if (redisValue != null) {
+            String redisCode = redisValue.split("_")[0];
+            if (!redisCode.equalsIgnoreCase(userRegistVo.getCode())) {
+                map.put("msg", "验证码错误");
+                redirectAttributes.addFlashAttribute("errors", map);
+                return "redirect:http://auth.mall.com/reg.html";
+            }
+        }
+        if (result.hasErrors()) {
+            //效验出错
+            Map<String, String> error = result.getFieldErrors().stream()
+                    .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+            BeanUtils.copyProperties(error, map);
+            redirectAttributes.addFlashAttribute("errors", map);
+            return "redirect:http://auth.mall.com/reg.html";
+        }
+        // 注册,调用远程保存 mall-member
+//        R r = memberFeignService.registMember(userRegistVo);
+//        if (r.getCode() != 0) {
+//            map.put("msg",(String)r.get("msg"));
+//            redirectAttributes.addFlashAttribute("errors", map);
+//            return "redirect:http://auth.gulimall.com/regist.html";
+//        }
+        return "redirect:http://auth.mall.com/login.html";
     }
 
 }
