@@ -1,3 +1,8 @@
 logging:
   level:
     cn.study.sms: debug
+sms:
+  region-id: 11
+  access-key-id: key
+  secret: secret
+  sys-domain: domain

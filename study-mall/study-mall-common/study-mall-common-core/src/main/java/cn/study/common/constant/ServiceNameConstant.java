@@ -8,4 +8,6 @@ public interface ServiceNameConstant {
     String WARE_SERVICE = "ware-service";
     String FILE_SERVICE = "file-service";
     String SEARCH_SERVICE = "search-service";
+    String AUTH_SERVICE = "auth-service";
+    String SMS_SERVICE = "sms-service";
 }

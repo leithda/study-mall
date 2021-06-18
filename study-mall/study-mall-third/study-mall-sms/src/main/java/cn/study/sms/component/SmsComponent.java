@@ -8,6 +8,7 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "sms")
 @Data
+@Slf4j
 public class SmsComponent {
 
     private String regionId;
@@ -26,12 +28,14 @@ public class SmsComponent {
 
     /**
      * 发送验证码
-     * @param phoneNumber 电话号
-     * @param signName 签名
+     *
+     * @param phoneNumber  电话号
+     * @param signName     签名
      * @param templateCode 模板代码
-     * @param code 验证码
+     * @param code         验证码
      */
-    public void sendSms(String phoneNumber,String signName,String templateCode,String code){
+    public void sendSms(String phoneNumber, String signName, String templateCode, String code) {
+        log.info("##sendSms##{},{},{},{}", phoneNumber, signName, templateCode, code);
         DefaultProfile profile = DefaultProfile.getProfile(regionId, accessKeyId, secret);
         IAcsClient client = new DefaultAcsClient(profile);
 
@@ -43,7 +47,7 @@ public class SmsComponent {
         request.putQueryParameter("PhoneNumbers", phoneNumber);
         request.putQueryParameter("SignName", signName);
         request.putQueryParameter("TemplateCode", templateCode);
-        request.putQueryParameter("TemplateParam", "{\"code\":\""+code+"\"}");
+        request.putQueryParameter("TemplateParam", "{\"code\":\"" + code + "\"}");
         try {
             CommonResponse response = client.getCommonResponse(request);
             System.out.println(response.getData());
