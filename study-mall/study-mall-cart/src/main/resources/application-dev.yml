@@ -1,0 +1,9 @@
+
+# 数据源配置
+spring:
+  thymeleaf:
+    cache: false
+logging:
+  level:
+    cn.study.cart: error
+

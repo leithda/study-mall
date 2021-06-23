@@ -1,0 +1,31 @@
+# Spring 配置
+spring:
+  profiles:
+    active: dev
+  application:
+    name: cart-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.56.10:8848
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  cache:
+    type: redis
+    redis:
+      time-to-live: 360000 # 缓存过期时间，一小时
+#      key-prefix: CACHE_ # 前缀，使用Redis命名分区作为前缀
+      cache-null-values: true # 缓存空值
+      use-key-prefix: true
+#    cache-names:
+  session:
+    store-type: redis
+
+# 端口
+server:
+  port: 9060
+
+
+logging:
+  level:
+    com.alibaba.nacos.client.naming: error # 调整 nacos 注册中心日志级别

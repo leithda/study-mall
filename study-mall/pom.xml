@@ -16,6 +16,7 @@
         <module>renren-fast</module>
         <module>renren-generator</module>
         <module>study-mall-auth</module>
+        <module>study-mall-cart</module>
     </modules>
     <packaging>pom</packaging>
     <description>商城聚合项目</description>
