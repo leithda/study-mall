@@ -18,6 +18,8 @@ spring:
       cache-null-values: true # 缓存空值
       use-key-prefix: true
 #    cache-names:
+  session:
+    store-type: redis
 
 # 端口
 server:

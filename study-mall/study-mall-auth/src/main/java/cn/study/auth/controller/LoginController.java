@@ -5,10 +5,10 @@ import cn.study.auth.entity.vo.UserLoginVo;
 import cn.study.auth.entity.vo.UserRegistVo;
 import cn.study.auth.feign.MemberFeignService;
 import cn.study.auth.feign.SmsFeignService;
+import cn.study.common.to.MemberRespTo;
 import cn.study.common.utils.R;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,8 +16,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -108,7 +110,7 @@ public class LoginController {
 
 
     @PostMapping("login")
-    public String login(UserLoginVo vo){
+    public String login(UserLoginVo vo, HttpSession session){
 
         // 远程登录
         R r = memberFeignService.login(vo);
@@ -117,7 +119,10 @@ public class LoginController {
             return "redirect:http://auth.mall.com/login.html";
         }
 
-        // TODO 登录成功处理
+        LinkedHashMap memberRespTo = (LinkedHashMap) r.get("data");
+        // TODO 1、默认发的令牌，默认作用域为当前域名，无法解决父域名及其他域名获取session的需要
+        // TODO 2、使用JSON序列化对象到Redis
+        session.setAttribute("loginUser",memberRespTo);
 
         // 重定向到商城首页
         return "redirect:http://mall.com";

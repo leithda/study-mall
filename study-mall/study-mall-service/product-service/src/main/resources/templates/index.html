@@ -95,7 +95,8 @@
             </b>
             <ul>
                 <li>
-                    <a href="http://auth.mall.com/login.html">你好，请登录</a>
+                    <a href="http://auth.mall.com/login.html">你好，请登录
+                        <label class="error-label" th:if="${session.loginUser}" th:text="${session.loginUser['nickname']}"></label></a>
                 </li>
                 <li>
                     <a href="http://auth.mall.com/reg.html" class="li_2">免费注册</a>

@@ -55,7 +55,7 @@ public class MemberController {
         if(Objects.isNull(memberEntity)){
             return R.error();
         }
-        return R.ok();
+        return R.ok().put("data",memberEntity);
     }
 
     /**
