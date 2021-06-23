@@ -2,7 +2,9 @@ package cn.study.member.controller;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
+import cn.study.member.entity.vo.MemberLoginVo;
 import cn.study.member.entity.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +41,20 @@ public class MemberController {
 
     @PostMapping("/regist")
     public R regist(@RequestBody MemberRegistVo vo){
-        memberService.regist(vo);
+        try {
+            memberService.regist(vo);
+        }catch (Exception e){
+            return R.error(e.getMessage());
+        }
+        return R.ok();
+    }
+    
+    @PostMapping("login")
+    public R login(@RequestBody MemberLoginVo vo){
+        MemberEntity memberEntity = memberService.login(vo);
+        if(Objects.isNull(memberEntity)){
+            return R.error();
+        }
         return R.ok();
     }
 

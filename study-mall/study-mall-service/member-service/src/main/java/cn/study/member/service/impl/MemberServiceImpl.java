@@ -1,14 +1,17 @@
 package cn.study.member.service.impl;
 
 import cn.study.member.entity.MemberLevelEntity;
+import cn.study.member.entity.vo.MemberLoginVo;
 import cn.study.member.entity.vo.MemberRegistVo;
 import cn.study.member.execption.PhoneExistsException;
 import cn.study.member.execption.UsernameExistsException;
 import cn.study.member.service.MemberLevelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -52,8 +55,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         memberEntity.setUsername(vo.getUsername());
 
         // 密码,加密存储
-        memberEntity.setPassword(null);
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encode = passwordEncoder.encode(vo.getPassword());
+        memberEntity.setPassword(encode);
 
+        // 其他的默认信息
+
+        // 保存数据
         save(memberEntity);
 
     }
@@ -73,6 +81,20 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         if (count > 0) {
             throw new PhoneExistsException();
         }
+    }
+
+    @Override
+    public MemberEntity login(MemberLoginVo vo) {
+        MemberEntity entity = getOne(new QueryWrapper<MemberEntity>().eq("mobile", vo.getLoginacct()).or().eq("username", vo.getLoginacct()));
+        if(Objects.isNull(entity)){
+            // 登录失败
+            return null;
+        }
+        boolean loginSuccess = new BCryptPasswordEncoder().matches(vo.getPassword(), entity.getPassword());
+        if(loginSuccess){
+            return entity;
+        }
+        return null;
     }
 
 }

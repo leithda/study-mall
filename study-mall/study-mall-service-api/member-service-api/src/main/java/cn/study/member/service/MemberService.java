@@ -1,5 +1,6 @@
 package cn.study.member.service;
 
+import cn.study.member.entity.vo.MemberLoginVo;
 import cn.study.member.entity.vo.MemberRegistVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.study.common.utils.PageUtils;
@@ -35,5 +36,11 @@ public interface MemberService extends IService<MemberEntity> {
      * @param phone 手机号
      */
     void checkPhoneUnique(String phone);
+
+    /**
+     * 登录
+     * @param vo 参数
+     */
+    MemberEntity login(MemberLoginVo vo);
 }
 

@@ -1,7 +1,9 @@
 package cn.study.auth.controller;
 
 import cn.study.auth.constant.AuthConstant;
+import cn.study.auth.entity.vo.UserLoginVo;
 import cn.study.auth.entity.vo.UserRegistVo;
+import cn.study.auth.feign.MemberFeignService;
 import cn.study.auth.feign.SmsFeignService;
 import cn.study.common.utils.R;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +31,9 @@ public class LoginController {
 
     @Autowired
     SmsFeignService smsFeignService;
+
+    @Autowired
+    MemberFeignService memberFeignService;
 
     @GetMapping("sms/sendCode")
     @ResponseBody
@@ -65,8 +70,6 @@ public class LoginController {
 
     /**
      * 注册成功跳至登录页
-     *
-     * @return
      */
     @PostMapping("/regist")
     public String regist(@Valid UserRegistVo userRegistVo, BindingResult result,
@@ -81,6 +84,8 @@ public class LoginController {
                 redirectAttributes.addFlashAttribute("errors", map);
                 return "redirect:http://auth.mall.com/reg.html";
             }
+            // 验证通过删除验证码
+            stringRedisTemplate.delete(AuthConstant.SMS_CODE_PREFIX + userRegistVo.getPhone());
         }
         if (result.hasErrors()) {
             //效验出错
@@ -91,14 +96,31 @@ public class LoginController {
             return "redirect:http://auth.mall.com/reg.html";
         }
         // 注册,调用远程保存 mall-member
-//        R r = memberFeignService.registMember(userRegistVo);
-//        if (r.getCode() != 0) {
-//            map.put("msg",(String)r.get("msg"));
-//            redirectAttributes.addFlashAttribute("errors", map);
-//            return "redirect:http://auth.gulimall.com/regist.html";
-//        }
+        R r = memberFeignService.regist(userRegistVo);
+        if (r.getCode() != 0) {
+            map.put("msg",(String)r.get("msg"));
+            redirectAttributes.addFlashAttribute("errors", map);
+            return "redirect:http://auth.mall.com/reg.html";
+        }
         // 注册成功，返回登录页
         return "redirect:http://auth.mall.com/login.html";
+    }
+
+
+    @PostMapping("login")
+    public String login(UserLoginVo vo){
+
+        // 远程登录
+        R r = memberFeignService.login(vo);
+        if(r.getCode() != 0){
+            // 登录失败，返回到登录页
+            return "redirect:http://auth.mall.com/login.html";
+        }
+
+        // TODO 登录成功处理
+
+        // 重定向到商城首页
+        return "redirect:http://mall.com";
     }
 
 }
