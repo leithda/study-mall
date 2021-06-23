@@ -97,6 +97,7 @@ public class LoginController {
 //            redirectAttributes.addFlashAttribute("errors", map);
 //            return "redirect:http://auth.gulimall.com/regist.html";
 //        }
+        // 注册成功，返回登录页
         return "redirect:http://auth.mall.com/login.html";
     }
 

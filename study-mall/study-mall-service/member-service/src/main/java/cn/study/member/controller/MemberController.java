@@ -3,12 +3,9 @@ package cn.study.member.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import cn.study.member.entity.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import cn.study.member.entity.MemberEntity;
 import cn.study.member.service.MemberService;
@@ -40,6 +37,11 @@ public class MemberController {
         return R.ok().put("page", page);
     }
 
+    @PostMapping("/regist")
+    public R regist(@RequestBody MemberRegistVo vo){
+        memberService.regist(vo);
+        return R.ok();
+    }
 
     /**
      * 信息
