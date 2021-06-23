@@ -1,11 +1,10 @@
 package cn.study.auth.controller;
 
-import cn.study.auth.constant.AuthConstant;
 import cn.study.auth.entity.vo.UserLoginVo;
 import cn.study.auth.entity.vo.UserRegistVo;
 import cn.study.auth.feign.MemberFeignService;
 import cn.study.auth.feign.SmsFeignService;
-import cn.study.common.to.MemberRespTo;
+import cn.study.common.constant.AuthConstant;
 import cn.study.common.utils.R;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +12,15 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -55,6 +54,16 @@ public class LoginController {
         }
         // 防止页面刷新
         return getCode(phone);
+    }
+
+    @GetMapping("login.html")
+    public String loginPage(HttpSession httpSession){
+        Object attribute = httpSession.getAttribute(AuthConstant.LOGIN_USER);
+        if(Objects.isNull(attribute)){
+            return "login";
+        }else{
+            return "redirect:http://mall.com";
+        }
     }
 
     private R getCode(@RequestParam("phone") String phone) {
@@ -120,9 +129,7 @@ public class LoginController {
         }
 
         LinkedHashMap memberRespTo = (LinkedHashMap) r.get("data");
-        // TODO 1、默认发的令牌，默认作用域为当前域名，无法解决父域名及其他域名获取session的需要
-        // TODO 2、使用JSON序列化对象到Redis
-        session.setAttribute("loginUser",memberRespTo);
+        session.setAttribute(AuthConstant.LOGIN_USER,memberRespTo);
 
         // 重定向到商城首页
         return "redirect:http://mall.com";

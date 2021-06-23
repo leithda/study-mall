@@ -94,12 +94,14 @@
                 </div>
             </b>
             <ul>
+
                 <li>
-                    <a href="http://auth.mall.com/login.html">你好，请登录
-                        <label class="error-label" th:if="${session.loginUser}" th:text="${session.loginUser['nickname']}"></label></a>
+                    <label class="error-label" th:if="${session.loginUser!=null}">欢迎，[[ ${session.loginUser['nickname']}
+                        ]]</label>
+                    <a th:if="${session.loginUser==null}" href="http://auth.mall.com/login.html">你好，请登录</a>
                 </li>
                 <li>
-                    <a href="http://auth.mall.com/reg.html" class="li_2">免费注册</a>
+                    <a th:if="${session.loginUser==null}" href="http://auth.mall.com/reg.html" class="li_2">免费注册</a>
                 </li>
                 <span>|</span>
                 <li>
@@ -116,7 +118,7 @@
             <input id="searchText" type="text" placeholder=""/>
             <span style="background: url(../static/index/img/img_12.png) 0 -1px;"></span>
             <!--<button><i class="glyphicon"></i></button>-->
-            <a  ><img src="static/index/img/img_09.png" onclick="search()" /></a>
+            <a><img src="static/index/img/img_09.png" onclick="search()"/></a>
         </div>
         <div class="header_ico">
             <div class="header_gw">

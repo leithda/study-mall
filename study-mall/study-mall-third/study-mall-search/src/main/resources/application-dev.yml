@@ -5,6 +5,7 @@ spring:
   elasticsearch:
     rest:
       uris: 192.168.56.10:9200
-
+  redis:
+    host: 192.168.56.10
   thymeleaf:
     cache: false
