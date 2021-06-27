@@ -145,3 +145,79 @@ direct(默认)、fanout、topic、headers
 
 
 
+## SpringBoot整合RabbitMQ
+
+1. 在订单服务中引入依赖：
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+```
+
+2. `RabbitAutoConfiguration`类进行自动装配
+
+3. 配置RabbitMQ连接信息
+
+   ```yaml
+   spring:
+     rabbitmq:
+       host: 192.168.56.10
+       port: 5672
+       virtual-host: /
+   ```
+
+   
+
+4. 使用@EnableRabbit开启RabbitMQ功能
+
+
+
+## AmqpAdmin的使用
+
+使用单元测试进行简单的功能测试。
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Slf4j
+public class OrderServiceApplicationTest {
+
+    /**
+     * 1、创建Exchange[hello-java-exchange]、Queue[hello-java-queue]、Binding
+     *  1) AmqpAdmin 创建
+     * 2、如何收发消息
+     */
+
+    @Autowired
+    AmqpAdmin amqpAdmin;
+
+    @Test
+    public void createExchange(){
+        // amqpAdmin
+        // DirectExchange(String name, boolean durable, boolean autoDelete, Map<String, Object> arguments)
+        DirectExchange directExchange = new DirectExchange("hello-java-exchange",true,false);
+        amqpAdmin.declareExchange(directExchange);
+        log.info("Exchange[{}]创建成功","hello-java-exchange");
+    }
+
+    @Test
+    public void createQueue(){
+        // Queue(String name, boolean durable, boolean exclusive, boolean autoDelete, @Nullable Map<String, Object> arguments)
+        Queue queue = new Queue("hello-java-queue",true,false,false);
+        amqpAdmin.declareQueue(queue);
+        log.info("Queue[{}]创建成功","hello-java-queue");
+    }
+
+    @Test
+    public void createBinding(){
+        // Binding(String destination, Binding.DestinationType destinationType, String exchange, String routingKey, @Nullable Map<String, Object> arguments)
+        Binding binding = new Binding("hello-java-queue", Binding.DestinationType.QUEUE,"hello-java-exchange","hello.java",null);
+        amqpAdmin.declareBinding(binding);
+        log.info("Binding[{}]创建成功","hello-java-binding");
+
+    }
+}
+```
+
