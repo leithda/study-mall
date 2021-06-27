@@ -12,4 +12,10 @@ public interface CartService {
      * @param num 数量
      */
     CartItem addToCart(Long skuId, Integer num) throws ExecutionException, InterruptedException;
+
+    /**
+     * 获取购物车中指定购物想
+     * @param skuId 商品ID
+     */
+    CartItem getCartItem(Long skuId);
 }
