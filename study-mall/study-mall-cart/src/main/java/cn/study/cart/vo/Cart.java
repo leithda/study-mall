@@ -5,7 +5,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 购物车对象
@@ -34,7 +33,7 @@ public class Cart {
     /**
      * 优惠价格
      */
-    private BigDecimal reduce;
+    private BigDecimal reduce = BigDecimal.ZERO;
 
 
     public Integer getCountNum() {
