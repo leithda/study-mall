@@ -468,3 +468,41 @@ public String sendMq(@RequestParam(value = "num", defaultValue = "10") Integer n
 
 - 其中，设置else代码块的消息路由键为`hello22.java`，保证消息投递队列失败，触发returnCallback。
 - 发送消息时，将消息`correlationData`入库，确认回调中更改消息状态。
+
+
+
+### 消费端确认
+
+>  默认自动确认，只要接收到消息，客户端会自动确认，服务端会移除消息。客户端收到很多消息，自动回复，只有一个消息处理成功，然后发送故障，服务端会删除所有消息。造成消息丢失。需要手动确认
+
+
+
+1. 设置`spring.rabbitmq.listener.direct.acknowledge-mode=manual`，消息手动确认。手动确认模式下，只要没给服务端ack响应，消息一直是unacked状态，即使Consumer宕机，消息会重新变更为Ready状态，不会丢失。
+
+2. 消费消息时手动进行ack
+
+```java
+    @RabbitHandler
+    public void receiveMessage(Message message, OrderReturnReasonEntity content, Channel channel) throws InterruptedException {
+        Thread.sleep(1000);
+        // deliveryTag为channel内自增的
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        // 签收消息,非批量模式
+        try {
+            channel.basicAck(deliveryTag,false);
+        } catch (IOException e) {
+            // 网络中断
+        }
+    }
+```
+
+3. 使用如下方法拒签消息
+
+```java
+channel.basicNack(long deliveryTag, boolean multiple, boolean requeue);
+channel.basicReject(long deliveryTag, boolean requeue);
+```
+
+- deliveryTag：消息标签
+- multiple: 是否批量模式
+- requeue: 消息是否重新入队

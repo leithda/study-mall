@@ -32,6 +32,14 @@ public class RabbitConfig {
      *  1）、spring.rabbitmq.publisher-returns=true
      *      spring.rabbitmq.template.mandatory=true
      *  2）、设置returnCallback回调方法
+     *
+     * 3、消费端确认机制
+     *  1）、默认自动确认，只要接收到消息，服务端会移除消息，客户端会自动确认。收到很多消息，自动回复，只有一个消息处理成功，发送故障，造成消息丢失。需要手动确认
+     *      手动确认模式下，只要没给服务端ack响应，消息一直是unacked状态，即使Consumer宕机，消息会重新变更为Ready状态，不会丢失。
+     *  2）、如何签收消息
+     *      channel.basicAck：签收消息
+     *      channel.basicNack：拒签消息
+     *
      */
     @PostConstruct // RabbitConfig对象创建完成之后执行
     public void initRabbitTemplate(){
