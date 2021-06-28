@@ -12,6 +12,12 @@ spring:
     host: 192.168.56.10
     port: 5672
     virtual-host: /
+    # publisher-confirms: true # 过时，使用下面的配置替代
+    publisher-confirm-type: correlated # 确认消息已发送到交换机(Exchange)选择确认类型为交互
+    publisher-returns: true # 开启Exchange消息抵达队列确认
+    template:
+      mandatory: true # 只要抵达队列，以异步方式优先回调 returnCallback
+
 logging:
   level:
     cn.study.product: debug

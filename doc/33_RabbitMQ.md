@@ -361,3 +361,110 @@ public String sendMq(@RequestParam(value = "num", defaultValue = "10") Integer n
 
 
 
+## RabbitMQ的消息确认机制
+
+![image-20210628223425016](33_RabbitMQ.assets/image-20210628223425016.png)
+
+
+
+### 发送端确认
+
+#### confirmCallback
+
+1. 使用`spring.rabbitmq.publisher-confirm-type=correlated`开启发送端确认机制
+
+2. 通过定制`RabbitTemplate`设置回调
+
+```java
+@Configuration
+public class RabbitConfig {
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+    /**
+     * 配置RabbitMQ序列化器
+     */
+    @Bean
+    public MessageConverter messageConverter(){
+        return new Jackson2JsonMessageConverter();
+    }
+
+    /**
+     * 定制 RabbitTemplate
+     */
+    @PostConstruct
+    public void initRabbitTemplate(){
+        // 设置确认回调
+        /**
+         * correlationData： 当前消息的唯一关联数据.消息的唯一ID
+         * ack: 消息是否成功收到
+         * cause： 失败原因
+         */
+        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+            System.out.println("confirm..." + "correlationData["+correlationData+"],==>ack["+ack+"], ==>cause["+cause+"]");
+        });
+    }
+}
+```
+
+
+
+#### returnCallback
+
+1. `spring.rabbitmq.publisher-returns=true`开启消息抵达队列确认机制。`spring.rabbitmq.template.mandatory=true`只要抵达队列，以异步方式优先回调 returnCallback
+
+2. 设置回调
+
+```java
+@Configuration
+public class RabbitConfig {
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+
+    @PostConstruct // RabbitConfig对象创建完成之后执行
+    public void initRabbitTemplate(){
+		// ... 省略部分代码
+
+        // 设置消息抵达队列的确认回调
+        // 消息没有投递给指定的队列触发此回调
+        /**
+         * message: 投递失败的消息的详细信息
+         * replyCode: 回复的状态码
+         * replyText: 回复的文本内容
+         * exchange: 交换机名
+         * routingKey: 路由键
+         */
+        rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -> System.out.println("失败的消息["+message+"]==> replyCode["+replyCode+"] ==> replyText["+replyText+"] ==> exchange["+exchange+"] ==> routingKey["+routingKey+"]"));
+    }
+}
+```
+
+- 同时，消息的correlationData由消息发送时处理，更改发送端如下：
+
+```java
+@GetMapping("sendMq")
+public String sendMq(@RequestParam(value = "num", defaultValue = "10") Integer num) {
+    for (int i = 0; i < num; i++) {
+        if (i % 2 == 0) {
+            OrderReturnReasonEntity orderReturnReasonEntity = new OrderReturnReasonEntity();
+            orderReturnReasonEntity.setId(1L);
+            orderReturnReasonEntity.setName("退货原因" + i);
+            orderReturnReasonEntity.setCreateTime(new Date());
+            orderReturnReasonEntity.setStatus(0);
+            orderReturnReasonEntity.setSort(0);
+            rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderReturnReasonEntity,new CorrelationData(UUID.randomUUID().toString()));
+        } else {
+            OrderEntity orderEntity = new OrderEntity();
+            orderEntity.setDeliverySn(UUID.randomUUID().toString());
+//                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderEntity,new CorrelationData(UUID.randomUUID().toString()));
+            // 测试投递错误触发returnCallback
+            rabbitTemplate.convertAndSend("hello-java-exchange", "hello22.java", orderEntity,new CorrelationData(UUID.randomUUID().toString()));
+        }
+    }
+    return "ok";
+}
+```
+
+- 其中，设置else代码块的消息路由键为`hello22.java`，保证消息投递队列失败，触发returnCallback。
+- 发送消息时，将消息`correlationData`入库，确认回调中更改消息状态。

@@ -30,13 +30,13 @@ public class TestReceive {
     @RabbitHandler
     public void receiveMessage(Message message, OrderReturnReasonEntity content, Channel channel) throws InterruptedException {
         //
-        Thread.sleep(3000);
+        Thread.sleep(1000);
         System.out.println("接收到消息"+message+" ==> 内容" + content);
     }
 
     @RabbitHandler
     public void receiveMessage(OrderEntity orderEntity) throws InterruptedException {
-        Thread.sleep(3000);
+        Thread.sleep(1000);
         System.out.println("接收到消息"+orderEntity);
     }
 }
