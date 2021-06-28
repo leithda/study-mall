@@ -12,10 +12,13 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * 1. 引入RabbitMQ依赖
  * 2. 给容器中自动配置了
  *  RabbitTemplate 、AmqpAdmin 、CachingConnectionFactory、 RabbitMessagingTemplate
- *  通过以下类进行配置
+ * 3. 通过以下类进行配置
  *      @ConfigurationProperties(prefix = "spring.rabbitmq")
  *      public class RabbitProperties {}
- * 3. @EnableRabbit 开启RabbitMQ功能
+ * 4. @EnableRabbit 开启RabbitMQ功能
+ * 5. 监听消息使用 @RabbitListener: 需要先行开启@EnableRabbit
+ * 6. @RabbitHandler , 当队列中存在不同的消息载体时，可以使用@RabbitHandler重载进行处理。
+ *
  */
 @SpringBootApplication
 @EnableDiscoveryClient

@@ -174,7 +174,7 @@ direct(默认)、fanout、topic、headers
 
 
 
-## AmqpAdmin的使用
+### AmqpAdmin的使用
 
 使用单元测试进行简单的功能测试。
 
@@ -220,4 +220,144 @@ public class OrderServiceApplicationTest {
     }
 }
 ```
+
+
+
+### 发送消息
+
+```java
+@Autowired
+RabbitTemplate rabbitTemplate;
+
+@Test
+public void sendMessageTest(){
+    // 1、发送消息，如果发送的消息是对象，使用序列化机制发送，需要实现Serializable接口
+    String message = "Hello RabbitMQ";
+    rabbitTemplate.convertAndSend("hello-java-exchange","hello.java",message);
+    log.info("消息发送完成: {}",message);
+}
+```
+
+- 发送对象默认使用Jdk序列化，可以通过如下配置设置为Json序列化
+
+```java
+@Configuration
+public class RabbitConfig {
+
+    /**
+     * 配置RabbitMQ序列化器
+     */
+    @Bean
+    public MessageConverter messageConverter(){
+        return new Jackson2JsonMessageConverter();
+    }
+}
+```
+
+- 测试用例
+
+```java
+@Test
+public void sendMessageTest(){
+    // 1、发送消息，如果发送的消息是对象，使用序列化机制发送，需要实现Serializable接口
+    OrderReturnReasonEntity orderReturnReasonEntity = new OrderReturnReasonEntity();
+    orderReturnReasonEntity.setId(1L);
+    orderReturnReasonEntity.setName("退货原因");
+    orderReturnReasonEntity.setCreateTime(new Date());
+    orderReturnReasonEntity.setStatus(0);
+    orderReturnReasonEntity.setSort(0);
+    rabbitTemplate.convertAndSend("hello-java-exchange","hello.java",orderReturnReasonEntity);
+    log.info("消息发送完成: {}",orderReturnReasonEntity);
+}
+```
+
+![image-20210628215936823](33_RabbitMQ.assets/image-20210628215936823.png)
+
+
+
+
+
+### 监听消息
+
+使用@RabbitListener注解进行消息的监听
+
+```java
+@Component
+public class TestReceive {
+
+    @RabbitListener(queues = {"hello-java-queue"})
+    public void receiveMessage(Object msg){
+        System.out.println("接收到消息"+msg+" ==> 消息类型" + msg.getClass());
+    }
+}
+```
+
+- 将带有RabbitListener注解的方法放在Spring容器中
+
+
+
+使用@RabbitHandler处理同一队列不同载体类型的消息
+
+```java
+@Component
+@RabbitListener(queues = {"hello-java-queue"})
+public class TestReceive {
+
+    /**
+     * queues：声明需要监听的队列
+     * 消息类型为 org.springframework.amqp.core.Message
+     *
+     * 参数可以设置为以下内容
+     * 1. Message message: 原生消息，包含消息头+消息体
+     * 2. T t: 发送消息的类型，OrderReturnReasonEntity content
+     * 3. Channel channel：当前传输数据的通道
+     *
+     * Queue：可以很多人来监听。只要收到消息，队列删除消息，只有一个人能收到此消息
+     *  1） 订单服务启动多个,同一个消息，只能有一个客户端收到
+     *  2) 只有一个消息处理完，方法运行结束，才可以接收下一个消息
+     *
+     */
+//    @RabbitListener(queues = {"hello-java-queue"})
+    @RabbitHandler
+    public void receiveMessage(Message message, OrderReturnReasonEntity content, Channel channel) throws InterruptedException {
+        //
+        Thread.sleep(3000);
+        System.out.println("接收到消息"+message+" ==> 内容" + content);
+    }
+
+    @RabbitHandler
+    public void receiveMessage(OrderEntity orderEntity) throws InterruptedException {
+        Thread.sleep(3000);
+        System.out.println("接收到消息"+orderEntity);
+    }
+}
+```
+
+- 对应的发送消息的方法如下：
+
+```java
+@GetMapping("sendMq")
+public String sendMq(@RequestParam(value = "num", defaultValue = "10") Integer num) {
+    for (int i = 0; i < num; i++) {
+        if (i % 2 == 0) {
+            OrderReturnReasonEntity orderReturnReasonEntity = new OrderReturnReasonEntity();
+            orderReturnReasonEntity.setId(1L);
+            orderReturnReasonEntity.setName("退货原因" + i);
+            orderReturnReasonEntity.setCreateTime(new Date());
+            orderReturnReasonEntity.setStatus(0);
+            orderReturnReasonEntity.setSort(0);
+            rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderReturnReasonEntity);
+            log.info("消息发送完成: {}", orderReturnReasonEntity);
+        } else {
+            OrderEntity orderEntity = new OrderEntity();
+            orderEntity.setDeliverySn(UUID.randomUUID().toString());
+            rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderEntity);
+            log.info("消息发送完成: {}", orderEntity);
+        }
+    }
+    return "ok";
+}
+```
+
+
 
