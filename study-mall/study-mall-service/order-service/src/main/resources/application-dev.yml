@@ -20,6 +20,8 @@ spring:
     listener:
       direct:
         acknowledge-mode: manual # 手动ack
+  thymeleaf:
+    cache: false
 
 logging:
   level:

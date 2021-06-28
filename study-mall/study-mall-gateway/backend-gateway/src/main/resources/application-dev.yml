@@ -64,3 +64,8 @@ spring:
           uri: lb://cart-service
           predicates:
             - Host=cart.mall.com
+
+        - id: order_host_route
+          uri: lb://order-service
+          predicates:
+            - Host=order.mall.com
