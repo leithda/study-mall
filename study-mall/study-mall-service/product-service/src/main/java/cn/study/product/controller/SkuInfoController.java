@@ -1,19 +1,15 @@
 package cn.study.product.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import cn.study.product.entity.SkuInfoEntity;
-import cn.study.product.service.SkuInfoService;
 import cn.study.common.utils.PageUtils;
 import cn.study.common.utils.R;
+import cn.study.product.entity.SkuInfoEntity;
+import cn.study.product.service.SkuInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Map;
 
 
 
@@ -29,6 +25,12 @@ import cn.study.common.utils.R;
 public class SkuInfoController {
     @Autowired
     private SkuInfoService skuInfoService;
+
+
+    @GetMapping("/{skuId}/price")
+    public BigDecimal getPrice(@PathVariable("skuId") Long skuId){
+        return skuInfoService.getById(skuId).getPrice();
+    }
 
     /**
      * 列表

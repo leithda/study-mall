@@ -16,16 +16,14 @@ import java.util.Objects;
 @Component
 public class LoginUserInterceptor implements HandlerInterceptor {
 
-    public static ThreadLocal<UserInfoTo> threadLocal = new ThreadLocal<>();
+    public static ThreadLocal<LinkedHashMap> threadLocal = new ThreadLocal<>();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        UserInfoTo userInfoTo = new UserInfoTo();
         LinkedHashMap loginUser = (LinkedHashMap) request.getSession().getAttribute(AuthConstant.LOGIN_USER);
         if (Objects.nonNull(loginUser)) {
             // 用户登录
-            userInfoTo.setUserId(Long.parseLong("" + loginUser.get("id")));
-            threadLocal.set(userInfoTo);
+            threadLocal.set(loginUser);
             return true;
         }else{
             request.getSession().setAttribute("msg","请先登录");

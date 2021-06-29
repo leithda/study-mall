@@ -10,4 +10,5 @@ public interface ServiceNameConstant {
     String SEARCH_SERVICE = "search-service";
     String AUTH_SERVICE = "auth-service";
     String SMS_SERVICE = "sms-service";
+    String CART_SERVICE = "cart-service";
 }

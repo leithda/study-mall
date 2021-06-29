@@ -4,6 +4,7 @@ package cn.study.cart.service;
 import cn.study.cart.vo.Cart;
 import cn.study.cart.vo.CartItem;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface CartService {
@@ -37,4 +38,9 @@ public interface CartService {
      * @param check 是否勾选
      */
     void check(Long skuId, Integer check);
+
+    /**
+     * 获取登录用户的购物项
+     */
+    List<CartItem> getUserCartItems();
 }
