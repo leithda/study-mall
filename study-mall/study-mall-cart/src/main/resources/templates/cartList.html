@@ -20,14 +20,15 @@
                 </li>
             </ul>
             <ul class="header-right">
-                <li style="border: 0;">
-                    <a th:if="${session.loginUser == null}" href="http://auth.mall.com/login.html" class="aa">你好，请登录</a>
-                    <a th:if="${session.loginUser != null}" class="aa">欢迎，[[ ${session.loginUser['nickname']}]]</a>
+                <li>
+                    <label class="error-label" th:if="${session.loginUser!=null}">欢迎，[[ ${session.loginUser['nickname']}
+                        ]]</label>
+                    <a th:if="${session.loginUser==null}" href="http://auth.mall.com/login.html">你好，请登录</a>
                 </li>
-                <li><a th:if="${session.loginUser == null}" href="/static/item/../注册页面\index.html" style="color: red;">免费注册</a>
-                    |
+                <li>
+                    <a th:if="${session.loginUser==null}" href="http://auth.mall.com/reg.html" class="li_2">免费注册</a>
                 </li>
-                <li><a href="/static/item/javascript:;" class="aa">我的订单</a> |</li>
+                <span>|</span>
                 <li class="spacer"></li>
                 <li><a href="">我的订单</a></li>
                 <li class="spacer"></li>
@@ -229,7 +230,7 @@
 
     function login() {
         var s = encodeURIComponent("http://cart.gmall.com:8087/cartList");
-        window.location.href = "http://auth.mall.com/login;
+        window.location.href = "http://auth.mall.com/login";
     }
 
     function checkSku(chkbox) {

@@ -22,7 +22,15 @@ spring:
         acknowledge-mode: manual # 手动ack
   thymeleaf:
     cache: false
+  session:
+    store-type: redis
 
 logging:
   level:
     cn.study.product: debug
+
+order:
+  thread:
+    core-size: 50
+    max-size: 200
+    keep-alive-time: 10
