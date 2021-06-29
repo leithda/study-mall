@@ -1,4 +1,4 @@
-package cn.study.cart.config;
+package cn.study.cart.conf;
 
 import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
 import org.springframework.context.annotation.Bean;

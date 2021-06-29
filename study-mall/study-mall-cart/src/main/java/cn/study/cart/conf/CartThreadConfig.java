@@ -1,4 +1,4 @@
-package cn.study.cart.config;
+package cn.study.cart.conf;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,13 +1,12 @@
 package cn.study.cart.interceptor;
 
-import cn.study.cart.vo.UserInfoTo;
+import cn.study.common.to.UserInfoTo;
 import cn.study.common.constant.AuthConstant;
 import cn.study.common.constant.CartConstant;
 import cn.study.common.utils.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

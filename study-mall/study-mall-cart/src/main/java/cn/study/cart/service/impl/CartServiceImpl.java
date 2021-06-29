@@ -6,7 +6,7 @@ import cn.study.cart.service.CartService;
 import cn.study.cart.vo.Cart;
 import cn.study.cart.vo.CartItem;
 import cn.study.cart.vo.SkuInfoVo;
-import cn.study.cart.vo.UserInfoTo;
+import cn.study.common.to.UserInfoTo;
 import cn.study.common.utils.R;
 import cn.study.common.utils.StringUtils;
 import com.alibaba.fastjson.JSON;

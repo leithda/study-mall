@@ -1,4 +1,4 @@
-package cn.study.cart.vo;
+package cn.study.common.to;
 
 import lombok.Data;
 
@@ -6,6 +6,5 @@ import lombok.Data;
 public class UserInfoTo {
     private Long userId;
     private String userKey;
-
     private boolean isTempUser;
 }

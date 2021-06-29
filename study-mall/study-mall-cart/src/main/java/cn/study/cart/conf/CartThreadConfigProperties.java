@@ -1,4 +1,4 @@
-package cn.study.cart.config;
+package cn.study.cart.conf;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
