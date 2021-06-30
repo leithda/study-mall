@@ -5,6 +5,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 订单确认页所需数据
@@ -29,6 +30,19 @@ public class OrderConfirmVo {
      * 防重订单令牌
      */
     private String orderToken;
+
+    /**
+     * 获取商品件数
+     */
+    public Integer getCount(){
+        Integer count = 0;
+        if(Objects.nonNull(items)){
+            for (OrderItemVo item : items) {
+                count += item.getCount();
+            }
+        }
+        return count;
+    }
 
     /**
      * 订单总额

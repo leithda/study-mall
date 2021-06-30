@@ -6,6 +6,7 @@ import cn.study.common.utils.PageUtils;
 import cn.study.order.entity.OrderEntity;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 订单
@@ -21,6 +22,6 @@ public interface OrderService extends IService<OrderEntity> {
     /**
      * 返回订单确认页所需要的数据
      */
-    OrderConfirmVo confirmOrder();
+    OrderConfirmVo confirmOrder() throws ExecutionException, InterruptedException;
 }
 

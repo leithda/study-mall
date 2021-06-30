@@ -17,6 +17,11 @@ public class OrderItemVo {
     private BigDecimal price;
     private Integer count;
 
+
     @Getter(AccessLevel.NONE)
     private BigDecimal totalPrice;
+
+    // TODO: 2021/6/30 查询库存状态
+    private boolean hasStock;
+    private BigDecimal weight;
 }

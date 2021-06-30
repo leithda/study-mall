@@ -14,15 +14,22 @@ import cn.study.order.service.OrderService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 @Service("orderService")
+@Slf4j
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
     @Autowired
@@ -30,6 +37,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     CartFeignService cartFeignService;
+
+    @Autowired
+    ThreadPoolExecutor executor;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -42,18 +52,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
     @Override
-    public OrderConfirmVo confirmOrder() {
+    public OrderConfirmVo confirmOrder() throws ExecutionException, InterruptedException {
         OrderConfirmVo orderConfirmVo = new OrderConfirmVo();
         LinkedHashMap loginUser = LoginUserInterceptor.threadLocal.get();
         Long userId = Long.parseLong(loginUser.get("id")+"");
+        log.info("主线程： {}",Thread.currentThread().getName());
+
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+
 
         // 1、远程查询用户的收货地址列表
-        List<MemberAddressVo> address = memberFeignService.getAddress(userId);
-        orderConfirmVo.setAddress(address);
+        CompletableFuture<Void> addrFuture = CompletableFuture.runAsync(()->{
+            log.info("member线程： {}",Thread.currentThread().getName());
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+            List<MemberAddressVo> address = memberFeignService.getAddress(userId);
+            orderConfirmVo.setAddress(address);
+        },executor);
 
-        // 2、远程购物车所有选中的购物项
-        List<OrderItemVo> items = cartFeignService.currentUserCartItems();
-        orderConfirmVo.setItems(items);
+
+        CompletableFuture<Void> cartFuture = CompletableFuture.runAsync(() -> {
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+            log.info("cart线程： {}",Thread.currentThread().getName());
+            // 2、远程购物车所有选中的购物项
+            List<OrderItemVo> items = cartFeignService.currentUserCartItems();
+            orderConfirmVo.setItems(items);
+        }, executor);
+
 
         // feign 在远程调用之前要构造请求，调用很多的拦截器
         /* #SynchronousMethodHandler.targetRequest
@@ -67,9 +91,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderConfirmVo.setIntegration(integration);
 
         // 4、其他的数据自动计算
+        CompletableFuture.allOf(addrFuture,cartFuture).get();
 
-
-        return null;
+        return orderConfirmVo;
     }
 
 }
